@@ -1,0 +1,23 @@
+Q: Which style of Ruby embedding does Scuby use?
+A: At the moment it uses the RedBridge JSR223 support
+
+Q: Which local variable, threading and JRuby instance modes are supported?
+A: Scuby makes no assumptions as to the local variable, threading and JRuby
+   instance modes. If your application needs to set a specific mode, set the
+   appropriate system property as documented in the JRuby Embed Wiki page,
+   before the first call to Scuby.
+
+Q: Does Scuby use implicit symbol to function conversions, so that Ruby methods
+   can be represented as Scala symbols?
+A: Not yet but it's something to explore in the future.
+
+Q: Is it possible to pass a top-level method to a Scala function that takes a
+   function (i.e., .map)?
+A: Not yet. This is part of the "block/FunctionN integration" task mentioned in
+   the README.
+
+Q: With Scuby I can save a method that is called on an object for "later", i.e.
+   val method = backEnd --> 'get_additional_data
+   Is it possible to do the same thing with a top level method at this time?
+A: Not yet.
+
