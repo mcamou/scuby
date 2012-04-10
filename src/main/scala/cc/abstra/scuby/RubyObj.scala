@@ -20,7 +20,7 @@ trait RubyObj {
    * @return The wrapped return value of the method
    * @throw ClassCastException if the return value is not of the expected class
    */
-  def send[T](name: Symbol, args: AnyRef*) = (new RubyMethod[T](this, name))(args:_*)
+  def send[T](name: Symbol, args: Any*) = (new RubyMethod[T](this, name))(args:_*)
 
   /**
    * Convenience method to call a method on the wrapped object, expecting a RubyObj as a return value
@@ -41,26 +41,36 @@ trait RubyObj {
 
   /**
    * Convenient access to Array- or Hash-like Ruby objects.
-   * - For no parameters, assumes the object supports the "call" method with no parameters (i.e. a block) and calls it
-   * - For one parameter will call the [] method on the object and return the result as an AnyRef
+   * - If the object supports the "call" or "invoke" method (i.e. a block) it will call it with the given parameters
+   * - Otherwise, for one parameter will call the [] method on the object and return the result as an AnyRef
    * - For more than one parameters, will call the [] method successively passing each subsequent parameter
    *   and return the result of the last call as an AnyRef (useful for Hashes of Hashes or Arrays of Arrays)
    */
-  def apply(keys: AnyRef*): AnyRef = { 
-    if (keys.length == 0) {
-      send[AnyRef]('call)
-    } else { 
-      val last = keys.slice(0, keys.length - 1).foldLeft(this) { (result, key) => send[RubyObj]("[]", key) }
+  def apply(args: Any*): AnyRef = { 
+    if (respondTo_?('call)) send[AnyRef]('call, args:_*)
+    else if (respondTo_?('invoke)) send[AnyRef]('invoke, args:_*)
+    else { 
+      val last = (this /: args.slice(0, args.length - 1)) { (result, key) => send[RubyObj]("[]", key) }
 
       // The last/only one is excluded from the fold because of the return type (AnyRef vs. RubyObj)
-      last.send[AnyRef]("[]",keys(keys.length - 1))
+      last.send[AnyRef]("[]",args(args.length - 1))
     }
   }
-
+  
+  /**
+   * Convenience method to see if an object responds to a method
+   */
+  def respondTo_?(method: Symbol): Boolean = send("respond_to?", %(method))
+  
+  /**
+   * Convenience method to see if an object belongs to a Ruby class
+   */
+  def isA_?(klazzName: Symbol): Boolean = send("is_a?", RubyClass(klazzName))
+  
   /**
    * Convenient access to Array- or Hash-like Ruby objects
    */
-  def update[T <: AnyRef](key: AnyRef, value: T): Unit = send[T]("[]=", key, value)
+  def update[T](key: Any, value: T): Unit = send[T]("[]=", key, value)
 
   /**
    * Delegate toString to the Ruby object's to_s
@@ -72,7 +82,7 @@ trait RubyObj {
    * Delegate equals to the Ruby object's ==
    */
   override def equals(other:Any) = other match {
-    case otherRef: RubyObj => send[Boolean]("==", otherRef)
+    case otherRef: RubyObj => send[Boolean]("==", otherRef.obj)
     case _ => false
   }
 
@@ -93,9 +103,7 @@ class RubyObject (val obj: JRubyObject) extends RubyObj {
    * @param rubyClassName Name of the Ruby class to create the object
    * @param args Any parameters to the constructor of the Ruby class
    */
-  def this(rubyClassName: Symbol, args: AnyRef*) = {
-    this(RubyClass(rubyClassName).send[RubyObj]('new, args:_*).obj)
-  }
+  def this(rubyClassName: Symbol, args: AnyRef*) = this(RubyClass(rubyClassName).send[RubyObj]('new, args:_*).obj)
 }
 
 /**
@@ -109,6 +117,7 @@ object % {
    * @return a RubyObj that represents the corresponding Ruby Symbol
    */
   def apply (sym: Symbol) = JRuby.eval[RubyObj](":'"+sym.name+"'")
+  def apply (sym: String) = JRuby.eval[RubyObj](":'"+sym+"'")
 }
 
 /**
@@ -137,5 +146,5 @@ class RubyMethod[T] private[scuby](target: RubyObj, name: Symbol) {
    * @param args The method parameters
    * @return The wrapped results from the method
    */
-  def apply(args: AnyRef*): T = send[T](target.obj, name, args:_*)
+  def apply(args: Any*): T = send[T](target.obj, name.name, args:_*)
 }

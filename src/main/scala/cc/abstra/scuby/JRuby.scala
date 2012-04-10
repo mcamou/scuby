@@ -7,9 +7,13 @@
 package cc.abstra.scuby
 
 import java.util.logging.{Logger, Level}
-import javax.script.{ScriptEngineManager, Invocable}
+
 import org.jruby.{RubyObject => JRubyObject}
+import org.jruby.embed.{ScriptingContainer,LocalContextScope,LocalVariableBehavior}
 import org.jruby.exceptions.RaiseException
+import org.jruby.{RubyInstanceConfig,CompatVersion}
+import RubyInstanceConfig.CompileMode
+import scala.collection.JavaConversions._
 
 /**
  * This trait is one of the main entry points into Scuby. Including it allows you to
@@ -22,7 +26,7 @@ import org.jruby.exceptions.RaiseException
  * @see JRuby
  */
 trait JRuby {
-  import JRuby.{handleException,wrap,unwrap,engine}
+  import JRuby.{handleException,wrap,unwrap,ruby}
 
   implicit def jrubyobj2rubyobj(jrobj:JRubyObject): RubyObject = new RubyObject(jrobj)
   implicit def str2sym (sym: String): Symbol = Symbol(sym)
@@ -32,34 +36,16 @@ trait JRuby {
    * Load a Ruby file from the CLASSPATH into the JRuby environment
    * @param file The file name to load, relative to the CLASSPATH
    */
-  def require(file:String) = handleException(eval[Boolean]("require '" + file + "'"))
+  def require(file:String) = eval[Boolean]("require '" + file + "'")
 
   /**
    * Evaluate an arbitrary Ruby expression
    * @param T The expected class of the return value
    * @param expression The ruby expression to evaluate
    * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
-   * @see javax.script.ScriptEngine#eval
+   * @see org.jruby.embed.ScriptingContainer#runScriptlet
    */
-  def eval[T](expression: String) = handleException(
-    wrap[T](
-      engine.eval(expression)
-    )
-  )
-
-  /**
-   * Invoke a Ruby function
-   * @param T The expected class of the return value
-   * @param name The name of the function to invoke
-   * @param args The arguments to the function
-   * @return The Ruby function's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
-   * @see javax.script.Invocable#invokeFunction
-   */
-  def call[T] (name: Symbol, args: AnyRef*) = handleException(
-    wrap[T](
-      engine.asInstanceOf[Invocable].invokeFunction(name.name, unwrap(args:_*):_*)
-    )
-  )
+  def eval[T](expression: String) = handleException(wrap[T](ruby.runScriptlet(expression)))
 }
 
 /**
@@ -72,8 +58,49 @@ trait JRuby {
  * @see RubyObj
  */
 object JRuby extends JRuby {
-  private val engine = new ScriptEngineManager().getEngineByName("jruby")
-
+  val log = Logger getLogger "cc.abstra.scuby"
+  
+  private var ruby0:Option[ScriptingContainer] = None
+  private var scope0:LocalContextScope = LocalContextScope.SINGLETON
+  private var localVariableBehavior0 = LocalVariableBehavior.TRANSIENT
+  
+  /**
+   * Set the interpreter Scope. Must be called before any Ruby code is executed.
+   * Default is Singleton scope.
+   * @param scope The new scope
+   * @see org.jruby.ScriptingContainer#new
+   */
+  def setScope (scope: LocalContextScope) {
+    ruby0 match {
+      case None => scope0 = scope
+      case Some(r) => log warning "Scope specified for an already-created Ruby container - not changing"
+    }
+  }
+  
+  /**
+   * Set the interpreter local variable behavior. Must be called before any Ruby code is executed.
+   * Default is transient.
+   * @param behavior The new local variable behavior
+   * @see org.jruby.ScriptingContainer#new
+   */
+  def setLocalVariableBehavior (behavior: LocalVariableBehavior) {
+    ruby0 match {
+      case None => localVariableBehavior0 = behavior
+      case Some(r) => log warning "LocalVariableBehavior specified for an already-created Ruby container - not changing"
+    }
+  }
+  
+  /**
+   * Creates the Scripting container or returns the already-existing one. Note that
+   * Scuby currently supports having a single Ruby interpreter.
+   */
+  def ruby:ScriptingContainer = ruby0 match {
+    case Some(r) => r
+    case None => 
+      ruby0 = Some(new ScriptingContainer(scope0, localVariableBehavior0))
+      ruby0.get
+  }
+  
   /**
    * Invoke a Ruby method on a Ruby object. The way of doing this in the public API is by
    * invoking RubyObj.send(name, args).
@@ -84,10 +111,10 @@ object JRuby extends JRuby {
    * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
    * @see javax.script.Invocable#invokeMethod
    */
-  private[scuby] def send[T](target: JRubyObject, name: Symbol, args: AnyRef*) = {
+  private[scuby] def send[T](target: JRubyObject, name: Symbol, args: Any*) = {
     handleException(
       wrap[T](
-        engine.asInstanceOf[Invocable].invokeMethod(target, name.name, unwrap(args:_*):_*)
+        ruby.callMethod(target, name.name, unwrap(args:_*):_*)
       )
     )
   }
@@ -102,11 +129,12 @@ object JRuby extends JRuby {
    * @return The unwrapped parameters
    * @see wrap
    */
-  private[scuby] def unwrap(args: AnyRef*) = args.map { (arg) =>
+  private[scuby] def unwrap(args: Any*) = args.map { (arg) =>
     arg match {
       case rbObj: RubyObj => rbObj.obj
       case sym: Symbol => %(sym).obj
-      case _ => arg
+      case x: AnyRef => x
+      case _ => arg.asInstanceOf[AnyRef]
     }
   }
 
@@ -121,9 +149,9 @@ object JRuby extends JRuby {
    */
   private[scuby] def wrap[T](obj: Any) = {
     (obj match {
-      case jrObj: JRubyObject => new RubyObject(jrObj)
-      case _ => obj
-    }).asInstanceOf[T]
+        case jrObj: JRubyObject => new RubyObject(jrObj)
+        case _ => obj
+      }).asInstanceOf[T]
   }
 
   /**
@@ -139,8 +167,8 @@ object JRuby extends JRuby {
     func
   } catch {
     case e => e.getCause match {
-      case raiseEx: RaiseException => throw RubyException(raiseEx.getException)
-      case _ => throw e
-    }
+        case raiseEx: RaiseException => throw RubyException(raiseEx.getException)
+        case _ => throw e
+      }
   }
 }

@@ -5,7 +5,7 @@ import org.jruby.{RubyException => JRubyException}
  * Wrapper around an org.jruby.RubyException that shows both the Java and the JRuby backtraces
  * @param exception the contained org.jruby.RubyException
  */
-case class RubyException(exception:JRubyException) extends Exception(exception.toString){
+case class RubyException(val exception:JRubyException) extends Exception(exception.toString){
   override def printStackTrace() = printStackTrace(System.err)
 
   override def printStackTrace(w: java.io.PrintWriter) = {
