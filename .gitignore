@@ -1,0 +1,12 @@
+.hg
+.hgignore
+target
+bin
+src/main/attic
+src/main/ruby
+src/test
+.classpath
+.project
+.settings
+nbactions.xml
+*~
