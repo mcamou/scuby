@@ -125,11 +125,11 @@ object Main {
     people(2) = RubyClass('Person) ! ('new, "Arthur", "Dent")
 
     // Get a reference to a Ruby method that can later be called
-    val get_person = backEnd --> 'get_person
+    val getPerson = backEnd --> 'get_person
 
     // Call the method. Returns an AnyRef. With the above, these 2 lines are
     // equivalent:
-    method("Zaphod") 
+    getPerson("Zaphod") 
     backEnd('get_person, "Zaphod")
 
     // Call a Ruby method which returns a Java object, in a type-safe way
