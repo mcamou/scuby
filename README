@@ -162,8 +162,8 @@ Calling JRuby from Scala:
   of the tricky things here is the typing of the parameters). This is a bit similar to what JRuby
   already does with interfaces that implement a single method.
 
-* Collections. I'd like to treat a Ruby collection as a Scala collection. That will probably wait
-  until 2.8 is more mature, with the new collections support.
+* Collections. I'd like to treat a Ruby collection as a Scala collection. That should be doable as
+  soon as I have some time...
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
@@ -173,11 +173,10 @@ Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 * Wrapping the Scala collections with their Ruby equivalents.
 
 * Add an Object#to_scala method which wraps the Ruby Object in a cc.abstra.scuby.RubyObj. Ideally
-  the wrapping should be done automatically but I'm not totally sure that that's possible. On the
-  other hand, the new Java support in JRuby 1.4 this might make this less necessary.
+  the wrapping should be done automatically but I'm not totally sure that that's possible. 
 
 General:
 
-* Bringing in the new JRuby 1.4 features
+* Evaluating the Scala support in the latest JRuby versions. There's quite a bit of cool stuff there!
 
 * Anything else that sounds useful
