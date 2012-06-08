@@ -10,3 +10,4 @@ src/test
 .settings
 nbactions.xml
 *~
+*.swp
