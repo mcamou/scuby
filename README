@@ -20,16 +20,16 @@ Scala or F#" by Angela O.K. Wright.
 The project is sponsored by Abstra.cc (http://www.abstra.cc) where we use it for
 our internal development.
 
-At the moment Scuby is based on JRuby 1.4.0 and Scala 2.7.7, even though it
+At the moment Scuby is based on JRuby 1.6.7 and Scala 2.9.2, even though it
 makes almost no use (yet) of the new Java interoperability features of JRuby
-1.4. These should slowly find their way into Scuby as time permits. The
-migration to Scala 2.8 will be done when that codebase is stable enough for our
-use.
+1.4+. These should slowly find their way into Scuby as time permits
 
 At this point the Scala -> Ruby part is...partly done, while the Ruby -> Scala
-part is still in the planning stages. Let's start with some of the things you
-can do today. Here are some examples. Assume you have the following Ruby code
-in a file called example.rb which is somewhere in your CLASSPATH:
+part is still in the planning stages (although with the JRuby changes in 1.6.x.
+it's become less necessary). Let's start with some of the things you can do today.
+Here are some examples. Assume you have the following Ruby code in a file called
+test.rb which is somewhere in your CLASSPATH (this file is part of the unit tests
+and can be found in src/test/ruby):
 
 module Core
   class Person
@@ -50,7 +50,7 @@ module Core
 
   module BackEnd
    def self.get_people
-      // Get data from the backend and return an Array of Person
+      # Get data from the backend and return an Array of Person
     end
 
     def self.get_data
@@ -58,18 +58,15 @@ module Core
     end
 
     def self.get_person(name)
-      // Get a person's data from the backend and return a Person object
+      # Get a person's data from the backend and return a Person object
     end
 
     def self.get_other_data
-      // Get some other data that is needed for the app
+      # Get some other data that is needed for the app
     end
   end
 end
 
-def get_empty_array
-  []
-end
 
 Here are some examples using Scuby:
 
@@ -86,14 +83,19 @@ object Main {
 
     // Eval a Ruby statement that returns a Ruby object
     val array = eval[RubyObj]("[]")
-    val array2: RubyObj = eval("[]") // Same thing using type inference
 
-    // Call a top-level Ruby function (i.e., one that isn't embedded in any
-    // object)
-    val array3 = call[RubyObj]('get_empty_array)
+    // Or with type inference
+    val array2:RubyObj = eval("[]")
 
     // Create a Ruby object
-    val array4 = new RubyObject('Array)
+    val array3 = new RubyObject('Array)
+
+    // Easily call is_a? and respond_to?
+    array3 isA_? 'Array // true
+    array3 isA_? 'Hash  // false
+
+    array3 respondTo_? 'length // true
+    array3 respondTo_? 'foo    //false
 
     // Create a proxy object for the Ruby BackEnd class
     val backEnd = RubyClass('BackEnd)
@@ -133,7 +135,7 @@ object Main {
     backEnd('get_person, "Zaphod")
 
     // Call a Ruby method which returns a Java object, in a type-safe way
-    val panel = person.send[JLabel]('get_label)
+    val label = person.send[JLabel]('get_label)
 
     // This is one way of chaining method calls that include array access. This
     // is kind of ugly but necessary because of the strong typing, since
@@ -164,6 +166,11 @@ Calling JRuby from Scala:
 
 * Collections. I'd like to treat a Ruby collection as a Scala collection. That should be doable as
   soon as I have some time...
+
+* Add a toScala[T] method where T is a trait that contains methods corresponding to those in a
+  Ruby object. For this we would need to (probably with a compiler plugin) automatically generate
+  a Scala class that implements the trait and forwards the calls to the Ruby object. Or wait for
+  Scala 2.10's support for Dynamic traits.
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
