@@ -111,7 +111,7 @@ class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
 
     "forward toString to to_s" in {
       val deepThought = new RubyObject('Person, "Deep", "Thought")
-      deepThought.toString must beEqualTo("Person(Deep, Thought)")
+      deepThought.toString must beEqualTo("Person(Thought, Deep)")
     }
 
     "forward hashCode to hash" in {
