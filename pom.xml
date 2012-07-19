@@ -48,6 +48,7 @@
     <properties>
         <scala.version>2.9.2</scala.version>
         <jruby.version>1.6.7</jruby.version>
+        <specs2.version>1.11</specs2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -57,25 +58,23 @@
             <version>${scala.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.7</version>
-            <scope>test</scope>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>specs</artifactId>
-            <version>1.6.7</version>
-            <scope>test</scope>
-        </dependency>
-        -->
-        <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby</artifactId>
             <version>${jruby.version}</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2_${scala.version}</artifactId>
+            <version>${specs2.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -91,14 +90,15 @@
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>3.0.2</version>
-		<configuration>
+		        <configuration>
                     <args>
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
                         <arg>-optimise</arg>
                     </args>
-		</configuration>
+                    <recompileMode>modified-only</recompileMode>
+		        </configuration>
                 <executions>
                     <execution>
                         <goals>
