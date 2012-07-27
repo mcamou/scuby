@@ -1,11 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cc.abstra.scuby</groupId>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <groupId>cc.abstra.pasilla</groupId>
     <artifactId>scuby</artifactId>
     <packaging>jar</packaging>
     <version>0.1.8-SNAPSHOT</version>
     <name>Scuby</name>
-    <url>http://github.com/mcamou/scuby</url>
+    <description>A simple library to ease integration between Scala and JRuby</description>
+    <url>http://github.com/abstracc/scuby</url>
+    <scm>
+        <url>git://github.com/abstracc/scuby.git</url>
+        <connection>scm:git:git@github.com:abstracc/scuby</connection>
+        <developerConnection>scm:git:git@github.com:abstracc/scuby</developerConnection>
+    </scm>
     <inceptionYear>2009</inceptionYear>
     <licenses>
         <license>
@@ -15,32 +26,20 @@
             <comments></comments>
         </license>
     </licenses>
-    <distributionManagement>
-        <repository>
-            <id>abstra-releases</id>
-            <name>Abstra Releases</name>
-            <url>http://aedea.abstra:8081/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>abstra-snapshots</id>
-            <name>Abstra Snapshots</name>
-            <url>http://aedea.abstra:8081/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
     <organization>
         <name>abstra.cc</name>
         <url>http://www.abstra.cc</url>
     </organization>
     <developers>
         <developer>
-            <id>mario</id>
+            <id>mcamou</id>
             <name>Mario Camou</name>
             <email>mario@abstra.cc</email>
             <url>http://abstra.cc</url>
             <organization>abstra.cc</organization>
             <organizationUrl>http://abstra.cc</organizationUrl>
             <roles>
-                <role>Master Architect and Developer</role>
+                <role>Original project developer</role>
             </roles>
             <timezone>+2</timezone>
         </developer>
