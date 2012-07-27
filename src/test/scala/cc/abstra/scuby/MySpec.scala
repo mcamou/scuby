@@ -126,7 +126,7 @@ class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
       val people = backend ! 'get_people
       people(3) = trillian
 
-      val length = people.send[Long]('length)
+      val length:Long = people send 'length
       length must beEqualTo(4)
 
       people(3) must beEqualTo(trillian)
