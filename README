@@ -6,9 +6,9 @@ http://www.codecommit.com. These are the two articles:
 JRuby Interop DSL in Scala (http://www.codecommit.com/blog/ruby/jruby-interop-dsl-in-scala)
 Integrating Scala into JRuby (http://www.codecommit.com/blog/ruby/integrating-scala-into-jruby)
 
-The idea behind the architecture came about based on a post by Ola Bini called
-"Fractal Programming" (http://olabini.com/blog/2008/06/fractal-programming/) in
-which he talks about dividing a program in 3 layers: the static layer for
+The idea behind this polyglot architecture came about based on a post by Ola Bini
+called "Fractal Programming" (http://olabini.com/blog/2008/06/fractal-programming/)
+in which he talks about dividing a program in 3 layers: the static layer for
 performance-critical functionality and those functions in which type safety is
 paramount, a dynamic layer where you create a DSL, and a DSL layer where the
 bulk of the business logic resides.
@@ -20,16 +20,36 @@ Scala or F#" by Angela O.K. Wright.
 The project is sponsored by Abstra.cc (http://www.abstra.cc) where we use it for
 our internal development.
 
+ADDING SCUBY TO YOUR PROJECT:
+
+To add Scuby to a Maven project, just add the following dependency:
+<dependency>
+  <groupId>cc.abstra.pasilla</groupId>
+  <artifactId>scuby</artifactId>
+  <version>0.1.8-SNAPSHOT</version>
+</dependency>
+
+If you use SBT, please convert this to SBT syntax.
+
+DEPENDENCIES:
+
+The Scuby pom.xml file includes dependencies on org.scala-lang.scala-library 2.9.2
+and org.jruby.jruby 1.6.7. If you don't use Maven or something that understands
+Maven pom.xml files, you will need to download the corresponding jars and
+place them in your CLASSPATH.
+
 At the moment Scuby is based on JRuby 1.6.7 and Scala 2.9.2, even though it
 makes almost no use (yet) of the new Java interoperability features of JRuby
-1.4+. These should slowly find their way into Scuby as time permits
+1.4+. These should slowly find their way into Scuby as time permits.
 
-At this point the Scala -> Ruby part is...partly done, while the Ruby -> Scala
+USAGE:
+
+At this point the Scala -> Ruby part is partly done, while the Ruby -> Scala
 part is still in the planning stages (although with the JRuby changes in 1.6.x.
 it's become less necessary). Let's start with some of the things you can do today.
 Here are some examples. Assume you have the following Ruby code in a file called
 test.rb which is somewhere in your CLASSPATH (this file is part of the unit tests
-and can be found in src/test/ruby):
+and can be found in src/test/resources/test.rb):
 
 module Core
   class Person
