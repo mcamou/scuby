@@ -129,13 +129,16 @@ object JRuby extends JRuby {
    * @return The unwrapped parameters
    * @see wrap
    */
-  private[scuby] def unwrap(args: Any*) = args.map { (arg) =>
-    arg match {
-      case rbObj: RubyObj => rbObj.obj
-      case sym: Symbol => %(sym).obj
-      case x: AnyRef => x
-      case _ => arg.asInstanceOf[AnyRef]
-    }
+  private[scuby] def unwrap(args: Any*):Seq[AnyRef] = {
+    if (args == null) Array.empty[AnyRef]
+    else args.map { arg =>
+      arg match {
+        case rbObj: RubyObj => rbObj.obj
+        case sym: Symbol => %(sym).obj
+        case x: AnyRef => x
+        case _ => arg.asInstanceOf[AnyRef]
+      }
+                  }
   }
 
   /**

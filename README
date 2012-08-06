@@ -145,45 +145,69 @@ object Main {
     // contents = form.components[:startables].widget.peer  # Returns a JComponent
     val label = (backEnd ! 'get_data ! ('[], %('people)) ! ('[], 0)).send[JLabel]('get_label)
     // OR
-    val zaphod = (backEnd ! 'get_data(%'people, 0)).asInstanceOf[RubyObj]
-    val label = zaphod.get_label
+    val zaphod3 = (backEnd ! 'get_data(%'people, 0)).asInstanceOf[RubyObj]
+    val label = zaphod3.get_label
+
+    // You can also use the as[T] method to wrap a RubyObj with a
+    // dynamically-generated proxy for a trait, to get all the statically-typed
+    // goodness on the Scala side. The proxy also takes care of the CamelCase to
+    // snake_case conversion. I have tested the basic calls and case conversion,
+    // plus the attribute assignments. More testing is needed to make sure
+    // there are no more edge cases
+    trait Person {
+      def firstname: String
+      def firstname_=(f: String): Unit
+      def lastname: String
+      def lastname_=(l: String): Unit
+      def fullname: String
+      def getLabel: JLabel
+    }
+
+    val zaphod:Person = new RubyObject('Person, "Zaphod", "Beeblebrox").as[Person]
+    zaphod.firstname = "The Zeeb"
+    println(zaphod.fullname)
+    val label = zaphod.getLabel
  }
 }
 
-This is the gist of it. Basically we can create Ruby objects, call methods on them and evaluate Ruby
-code. Scuby has its own RubyObj class that wraps a RubyObject and does its magic. It also has its
-own RubyClass class that represents a Ruby class.
+This is the gist of it. Basically we can create Ruby objects, call methods on them
+and evaluate Ruby code. Scuby has its own RubyObj class that wraps a RubyObject and
+does its magic. It also has its own RubyClass class that represents a Ruby class.
 
 
 NEXT STEPS
 
 Calling JRuby from Scala:
 
-* Block/FunctionN conversion. The idea is that if you have a Scala method that takes a FunctionN,
-  you could pass in directly any Ruby object that implements the call method with N parameters (one
-  of the tricky things here is the typing of the parameters). This is a bit similar to what JRuby
-  already does with interfaces that implement a single method.
+* Block/FunctionN conversion. The idea is that if you have a Scala method that takes
+  a FunctionN, you could pass in directly any Ruby object that implements the call
+  method with N parameters (one of the tricky things here is the typing of the
+  parameters). This is a bit similar to what JRuby already does with interfaces that
+  implement a single method.
 
-* Collections. I'd like to treat a Ruby collection as a Scala collection. That should be doable as
-  soon as I have some time...
+* Collections. I'd like to treat a Ruby collection as a Scala collection. That should
+  be doable as soon as I have some time...
 
-* Add a toScala[T] method where T is a trait that contains methods corresponding to those in a
-  Ruby object. For this we would need to (probably with a compiler plugin) automatically generate
-  a Scala class that implements the trait and forwards the calls to the Ruby object. Or wait for
-  Scala 2.10's support for Dynamic traits.
+* Get more test cases in for as[T]
+
+* Create traits that mimic the standard Ruby object hierarchy, at least for Object,
+  Class and Module, and either allow the traits passed in to as[T] to extend them,
+  or automatically extend them depending on the Ruby object's type.
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
-* Block/FunctionN conversion, so you could pass in a Scala function to any Ruby method that expects
-  a block.
+* Block/FunctionN conversion, so you could pass in a Scala function to any Ruby
+  method that expects a block.
 
 * Wrapping the Scala collections with their Ruby equivalents.
 
-* Add an Object#to_scala method which wraps the Ruby Object in a cc.abstra.scuby.RubyObj. Ideally
-  the wrapping should be done automatically but I'm not totally sure that that's possible. 
+* Add an Object#to_scala method which wraps the Ruby Object in a Scuby RubyObj.
+  Ideally the wrapping should be done automatically but I'm not totally sure if
+  that's possible.
 
 General:
 
-* Evaluating the Scala support in the latest JRuby versions. There's quite a bit of cool stuff there!
+* Evaluating the Scala support in the latest JRuby versions. There's quite a bit of
+  cool stuff there!
 
 * Anything else that sounds useful

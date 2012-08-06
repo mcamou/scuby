@@ -2,6 +2,8 @@ package cc.abstra.scuby
 
 import org.jruby.{RubyObject => JRubyObject}
 import JRuby.str2sym
+import java.lang.reflect.{InvocationHandler, Method, Proxy}
+import org.jruby.javasupport.JavaUtil
 
 /**
  * A wrapped Ruby object. Adds convenience methods to call the JRuby methods.
@@ -18,7 +20,7 @@ trait RubyObj {
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
-   * @throw ClassCastException if the return value is not of the expected class
+   * @throws ClassCastException if the return value is not of the expected class
    */
   def send[T](name: Symbol, args: Any*) = (new RubyMethod[T](this, name))(args:_*)
 
@@ -27,7 +29,7 @@ trait RubyObj {
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
-   * @throw ClassCastException if the return value is not a RubyObj
+   * @throws ClassCastException if the return value is not a RubyObj
    * @see send
    */
   def ! (name: Symbol, args: AnyRef*) = send[RubyObj](name, args:_*)
@@ -46,27 +48,79 @@ trait RubyObj {
    * - For more than one parameters, will call the [] method successively passing each subsequent parameter
    *   and return the result of the last call as an AnyRef (useful for Hashes of Hashes or Arrays of Arrays)
    */
-  def apply(args: Any*): AnyRef = { 
+  def apply(args: Any*): AnyRef = {
     if (respondTo_?('call)) send[AnyRef]('call, args:_*)
     else if (respondTo_?('invoke)) send[AnyRef]('invoke, args:_*)
-    else { 
+    else {
       val last = (this /: args.slice(0, args.length - 1)) { (result, key) => send[RubyObj]("[]", key) }
 
       // The last/only one is excluded from the fold because of the return type (AnyRef vs. RubyObj)
       last.send[AnyRef]("[]",args(args.length - 1))
     }
   }
-  
+
   /**
-   * Convenience method to see if an object responds to a method
+   * Convenience method to see if an object responds to a method. Wrapper around Object#respond_to?
+   * @param method The name of the method
+   * @return true if the object implements the method, false otherwise
    */
   def respondTo_?(method: Symbol): Boolean = send("respond_to?", %(method))
-  
+
   /**
-   * Convenience method to see if an object belongs to a Ruby class
+   * Convenience method to see if an object belongs to a Ruby class. Wrapper around Object#is_a?
+   * @param klazzName The name of the Ruby class
+   * @return true if the object is an instance of that class, false otherwise
    */
   def isA_?(klazzName: Symbol): Boolean = send("is_a?", RubyClass(klazzName))
-  
+
+  /**
+   * Wrap a RubyObj with a Scala interface
+   * @param T A trait that should declare (some) of the methods of the object. CamelCase -> snail_case conversion is
+   *          done automatically, as well as assignmnent to attributes (x_= is converted to x=). Methods that are
+   *          implemented in the trait are <b>NOT</b> forwarded.
+   * @return A dynamically-generated proxy that forwards each method call to its corresponding Ruby call. Note that
+   *         if the object doesn't actually implement the method, an exception is thrown at call time, not at wrapping
+   *         time.
+   * @see http://stackoverflow.com/questions/11810414/generating-a-scala-class-automatically-from-a-trait
+   */
+  def as[T: ClassManifest]: T = {
+    val theClass = classManifest[T].erasure.asInstanceOf[Class[T]]
+    theClass.cast(
+                   Proxy.newProxyInstance(
+                                           theClass.getClassLoader(),
+                                           Array(theClass),
+                                           new InvocationHandler {
+                                             def invoke(target: AnyRef, method: Method, params: Array[AnyRef]): AnyRef = {
+                                               val splitName = method.getName split '$'
+                                               val methodName = if (splitName.length == 1) splitName(0)
+                                                                else {
+                                                                  val n = if (splitName(0) endsWith "_") splitName(0).substring(0, splitName(0).length - 1)
+                                                                          else splitName(0)
+                                                                  n + (splitName(1) match {
+                                                                    case "plus" => "+"
+                                                                    case "minus" => "-"
+                                                                    case "colon" => ":"
+                                                                    case "div" => "/"
+                                                                    case "eq" => "="
+                                                                    case "less" => "<"
+                                                                    case "greater" => ">"
+                                                                    case "bslash" => "\\"
+                                                                    case "hash" => "#"
+                                                                    case "times" => "*"
+                                                                    case "bang" => "!"
+                                                                    case "at" => "@"
+                                                                    case "percent" => "%"
+                                                                    case "up" => "^"
+                                                                    case "amp" => "&"
+                                                                    case "tilde" => "~"
+                                                                    case "qmark" => "?"
+                                                                    case "bar" => "|"
+                                                                  })
+                                                                }
+                                               send[AnyRef](JavaUtil.getRubyCasedName(methodName), params: _*)
+                                             }}))
+  }
+
   /**
    * Convenient access to Array- or Hash-like Ruby objects
    */

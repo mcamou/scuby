@@ -154,9 +154,26 @@ class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
 
     "call a Ruby method which returns a Java object" in {
       val zaphod = new RubyObject('Person, "Zaphod", "Beeblebrox")
-      val label = zaphod.send[JLabel]('get_label)
-      label must beAnInstanceOf[JLabel]
+      val label:JLabel = zaphod.send[JLabel]('get_label)
       label.getText must beEqualTo("Zaphod Beeblebrox")
+    }
+
+    "wrap a JRuby object in a Scala trait" in {
+      trait Person {
+        def firstname: String
+        def firstname_=(f: String): Unit
+        def lastname: String
+        def lastname_=(l: String): Unit
+        def fullname: String
+        def getLabel: JLabel
+      }
+
+      val zaphod:Person = new RubyObject('Person, "Zaphod", "Beeblebrox").as[Person]
+      zaphod.firstname must beEqualTo("Zaphod")
+      zaphod.firstname = "The Zeeb"
+      zaphod.firstname must beEqualTo("The Zeeb")
+      zaphod.fullname must beEqualTo("The Zeeb Beeblebrox")
+      zaphod.getLabel.getText must beEqualTo("The Zeeb Beeblebrox")
     }
   }
 }
