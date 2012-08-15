@@ -85,6 +85,8 @@ trait RubyObj {
    */
   def as[T: ClassManifest]: T = {
     val theClass = classManifest[T].erasure.asInstanceOf[Class[T]]
+    // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: cc.abstra.scuby.test.ExtendedTest and cc.abstra.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
+    //JRuby.ruby.getInstance(obj, theClass).asInstanceOf[T]
     theClass.cast(
                    Proxy.newProxyInstance(
                                            theClass.getClassLoader(),

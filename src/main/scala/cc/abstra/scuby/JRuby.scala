@@ -36,14 +36,15 @@ trait JRuby {
    * Load a Ruby file from the CLASSPATH into the JRuby environment
    * @param file The file name to load, relative to the CLASSPATH
    */
-  def require(file:String) = eval[Boolean]("require '" + file + "'")
+  def require(file:String) = eval[Boolean]("require '%s'".format(file))
 
   /**
-   * Evaluate an arbitrary Ruby expression
+   * Evaluate an arbitrary Ruby expression, casting and wrapping the return value
    * @param T The expected class of the return value
    * @param expression The ruby expression to evaluate
    * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
    * @see org.jruby.embed.ScriptingContainer#runScriptlet
+   * @see wrap
    */
   def eval[T](expression: String) = handleException(wrap[T](ruby.runScriptlet(expression)))
 }
@@ -102,14 +103,16 @@ object JRuby extends JRuby {
   }
   
   /**
-   * Invoke a Ruby method on a Ruby object. The way of doing this in the public API is by
-   * invoking RubyObj.send(name, args).
+   * Invoke a Ruby method on a Ruby object. The way of doing this in the public Scuby API is by
+   * invoking RubyObj.send(name, args). Arguments are unwrapped and the result is wrapped again.
    * @param T The expected class of the return value
    * @param target The object on which to invoke the method
    * @param name The name of the method to invoke
    * @param args The arguments to the method
    * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
    * @see javax.script.Invocable#invokeMethod
+   * @see wrap[T]
+   * @see unwrap[T
    */
   private[scuby] def send[T](target: JRubyObject, name: Symbol, args: Any*) = {
     handleException(
@@ -120,8 +123,8 @@ object JRuby extends JRuby {
   }
 
   /**
-   * Unwraps a parameter list. That is, for each parameter, if it's a cc.abstra.scuby.RubyObj it
-   * extracts the embedded org.jruby.RubyObject, otherwise it leaves it as-is. Note that this is
+   * Unwraps a parameter list. Wrapped org.jruby.RubyObject's are extracted from their wrappers, Scala Symbols are
+   * converted to Ruby Symbols and primitives are boxed. All other values are left as-is. Note that this is
    * not an exact inverse of wrap, since wrap takes a single object while unwrap takes a whole
    * argument list.
    * @param T The expected class of the return value
@@ -131,22 +134,20 @@ object JRuby extends JRuby {
    */
   private[scuby] def unwrap(args: Any*):Seq[AnyRef] = {
     if (args == null) Array.empty[AnyRef]
-    else args.map { arg =>
-      arg match {
+    else args.map { _ match {
         case rbObj: RubyObj => rbObj.obj
         case sym: Symbol => %(sym).obj
-        case x: AnyRef => x
-        case _ => arg.asInstanceOf[AnyRef]
+        case x => x.asInstanceOf[AnyRef]
       }
                   }
   }
 
   /**
    * Wraps an org.jruby.RubyObject in a cc.abstra.scuby.RubyObj. If the parameter is not an
-   * org.jruby.RubyObject, it returns it as-is. Used to wrap return values from Ruby calls. Note
-   * that this is not an exact inverse of unwrap since unwrap processes a parameter list while wrap
-   * processes a single return value.
-   * @param R The expected class of the return value
+   * org.jruby.RubyObject, it returns it as-is, cast to the class given as type argument. This is
+   * used to wrap return values from Ruby calls. Note that this is not an exact inverse of unwrap,
+   * since unwrap processes a parameter list while wrap processes a single return value.
+   * @param T The expected class of the return value
    * @param obj The object to wrap
    * @return The wrapped object
    */
