@@ -8,7 +8,7 @@
     <groupId>cc.abstra.pasilla</groupId>
     <artifactId>scuby</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.8-SNAPSHOT</version>
+    <version>0.1.8</version>
     <name>Scuby</name>
     <description>A simple library to ease integration between Scala and JRuby</description>
     <url>http://github.com/abstracc/scuby</url>
@@ -103,6 +103,7 @@
                         <goals>
                             <goal>compile</goal>
                             <goal>testCompile</goal>
+                            <goal>doc-jar</goal>
                         </goals>
                     </execution>
                 </executions>
