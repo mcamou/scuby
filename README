@@ -195,24 +195,20 @@ and evaluate Ruby code. Scuby has its own RubyObj class that wraps a RubyObject 
 does its magic. It also has its own RubyClass class that represents a Ruby class.
 
 
-NEXT STEPS
+NEXT STEPS (for 1.0)
 
 Calling JRuby from Scala:
 
-* Block/FunctionN conversion. The idea is that if you have a Scala method that takes
-  a FunctionN, you could pass in directly any Ruby object that implements the call
-  method with N parameters (one of the tricky things here is the typing of the
-  parameters). This is a bit similar to what JRuby already does with interfaces that
-  implement a single method.
-
-* Collections. I'd like to treat a Ruby collection as a Scala collection. That should
-  be doable as soon as I have some time...
-
-* Get more test cases in for as[T]
+* Transparently wrap Ruby collections in Scala collections, so you can use them
+  with foreach, for, map, foldLeft, foldRight, etc...
 
 * Create traits that mimic the standard Ruby object hierarchy, at least for Object,
-  Class and Module, and either allow the traits passed in to as[T] to extend them,
-  or automatically extend them depending on the Ruby object's type.
+  Class and Module, and either allow the traits passed in to as[T] to wrap them,
+  or automatically extend the traits depending on the Ruby object's type
+
+* More test cases for as[T] and perhaps simplify the implementation
+
+* More testing in general
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
@@ -225,9 +221,3 @@ Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
   Ideally the wrapping should be done automatically but I'm not totally sure if
   that's possible.
 
-General:
-
-* Evaluating the Scala support in the latest JRuby versions. There's quite a bit of
-  cool stuff there!
-
-* Anything else that sounds useful
