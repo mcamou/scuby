@@ -206,13 +206,21 @@ Calling JRuby from Scala:
   Class and Module, and either allow the traits passed in to as[T] to wrap them,
   or automatically extend the traits depending on the Ruby object's type
 
+* Create a Java-friendly API so Scuby can be more-easily used from Java or other 
+  JVM languages
+
+* Optimization. There are probably a lot of things that can be optimized by calling
+  the internal JRuby APIs
+
 * More test cases for as[T] and perhaps simplify the implementation
 
 * More testing in general
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
-* Block/FunctionN conversion, so you could pass in a Scala function to any Ruby
+* Create a gem for loading into JRuby
+
+* FunctionN -> block conversion, so you could pass in a Scala function to any Ruby
   method that expects a block.
 
 * Wrapping the Scala collections with their Ruby equivalents.
@@ -220,4 +228,7 @@ Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 * Add an Object#to_scala method which wraps the Ruby Object in a Scuby RubyObj.
   Ideally the wrapping should be done automatically but I'm not totally sure if
   that's possible.
+
+* Create a scala top-level function, so you can do, i.e., "import scala.mutable.List"
+  instead of Java::ScalaMutable::List
 
