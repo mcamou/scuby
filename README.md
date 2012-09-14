@@ -179,13 +179,12 @@ object Main {
 }
 ```
 
-This is the gist of it. Basically we can create Ruby objects, call methods on them and evaluate Ruby code. Scuby has its own `RubyObj` class that wraps a JRuby  `RubyObject` and does its magic. It also has its own `RubyClass class that  represents a Ruby class.
+This is the gist of it. Basically we can create Ruby objects, call methods on them and evaluate Ruby code. Scuby has its own `RubyObj` class that wraps a JRuby  `RubyObject` and does its magic. It also has its own `RubyClass` class that  represents a Ruby class.
 
 
 ## RELATED PROJECTS
 
 [jruby-scala](http://rubygems.org/gems/jruby-scala): Allows you to use Ruby Procs as Scala functions, including Scala traits into Ruby modules, and more
-
 [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections): Eases the pain of passing JRuby and Scala collections back and forth
 
 
@@ -193,7 +192,7 @@ This is the gist of it. Basically we can create Ruby objects, call methods on th
 
 Calling JRuby from Scala:
 
-* Transparently wrap Ruby collections in Scala collections, so you can use them with `foreach`, `for`, `map`, `foldLeft`, `foldRight`, etc... (see [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections) )
+* Transparently wrap Ruby collections in Scala collections, so you can use them with `foreach`, `for`, `map`, `foldLeft`, `foldRight`, etc... (see [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections))
 
 * Create traits that mimic the standard Ruby object hierarchy, at least for Object, Class and Module, and either allow the traits passed in to as[T] to wrap them, or automatically extend the traits depending on the Ruby object's type
 
@@ -207,11 +206,11 @@ Calling JRuby from Scala:
 
 Calling Scala from JRuby (although lots of it is handled automatically by JRuby).
 
-* Create a gem for loading into JRuby (See [jruby-scala](http://rubygems.org/gems/jruby-scala) and [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections) )
+* Create a gem for loading into JRuby (See [jruby-scala](http://rubygems.org/gems/jruby-scala) and [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections))
 
-* FunctionN -> block conversion, so you could pass in a Scala function to any Ruby method that expects a block. (See [jruby-scala](http://rubygems.org/gems/jruby-scala) )
+* FunctionN -> block conversion, so you could pass in a Scala function to any Ruby method that expects a block. (See [jruby-scala](http://rubygems.org/gems/jruby-scala))
 
-* Wrapping the Scala collections with their Ruby equivalents. (See [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections) )
+* Wrapping the Scala collections with their Ruby equivalents. (See [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections))
 
 * Add an `Object#to_scala` method which wraps the Ruby Object in a Scuby `RubyObj`. Ideally the wrapping should be done automatically but I'm not totally sure if that's possible.
 
@@ -219,5 +218,5 @@ Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
 ## COLLABORATING
 
-As usual on GitHub: fork, pull, modify, *create tests*, commit, push, pull request. You can also find us in Twitter as [@abstracc](https://twitter.com/abstracc) and [@thedoc](https://twitter.com/thedoc)
+As usual on GitHub: fork, pull, modify, *create tests*, commit, push, pull request. You can also find us on Twitter as [@abstracc](https://twitter.com/abstracc) and [@thedoc](https://twitter.com/thedoc)
 
