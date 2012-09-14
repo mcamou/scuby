@@ -29,7 +29,7 @@ To add Scuby to a Maven project, just add the following dependency:
   <version>0.1.8</version>
 </dependency>
 
-If you use SBT, please convert this to SBT syntax.
+If you use SBT, Gradle, etc.., please convert this to your preferred syntax.
 
 DEPENDENCIES:
 
@@ -46,10 +46,10 @@ USAGE:
 
 At this point the Scala -> Ruby part is partly done, while the Ruby -> Scala
 part is still in the planning stages (although with the JRuby changes in 1.6.x.
-it's become less necessary). Let's start with some of the things you can do today.
-Here are some examples. Assume you have the following Ruby code in a file called
-test.rb which is somewhere in your CLASSPATH (this file is part of the unit tests
-and can be found in src/test/resources/test.rb):
+it's become less necessary). Here are some examples of the things you can do
+today. Assume you have the following Ruby code in a file called test.rb which 
+is somewhere in your CLASSPATH (this file is part of the Scuby unit tests and
+can be found in src/test/resources/test.rb):
 
 module Core
   class Person
@@ -195,12 +195,22 @@ and evaluate Ruby code. Scuby has its own RubyObj class that wraps a RubyObject 
 does its magic. It also has its own RubyClass class that represents a Ruby class.
 
 
+RELATED PROJECTS
+
+jruby-scala at http://rubygems.org/gems/jruby-scala: Allows you to use Ruby Procs as
+Scala functions, including Scala traits into Ruby modules, and more
+
+jruby-scala-collections at https://github.com/arturaz/jruby-scala-collections eases
+the pain of passing JRuby and Scala collections back and forth
+
+
 NEXT STEPS (for 1.0)
 
 Calling JRuby from Scala:
 
 * Transparently wrap Ruby collections in Scala collections, so you can use them
-  with foreach, for, map, foldLeft, foldRight, etc...
+  with foreach, for, map, foldLeft, foldRight, etc... (see jruby-scala-collections
+  above)
 
 * Create traits that mimic the standard Ruby object hierarchy, at least for Object,
   Class and Module, and either allow the traits passed in to as[T] to wrap them,
@@ -216,7 +226,8 @@ Calling JRuby from Scala:
 
 * More testing in general
 
-Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
+Calling Scala from JRuby (although lots of it is handled automatically by JRuby).
+See jruby-scala above.
 
 * Create a gem for loading into JRuby
 
