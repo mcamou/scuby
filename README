@@ -232,9 +232,10 @@ See jruby-scala above.
 * Create a gem for loading into JRuby
 
 * FunctionN -> block conversion, so you could pass in a Scala function to any Ruby
-  method that expects a block.
+  method that expects a block. (See jruby-scala above)
 
-* Wrapping the Scala collections with their Ruby equivalents.
+* Wrapping the Scala collections with their Ruby equivalents. (See 
+  jruby-scala-collections above)
 
 * Add an Object#to_scala method which wraps the Ruby Object in a Scuby RubyObj.
   Ideally the wrapping should be done automatically but I'm not totally sure if
