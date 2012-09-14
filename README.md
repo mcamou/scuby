@@ -184,7 +184,8 @@ This is the gist of it. Basically we can create Ruby objects, call methods on th
 
 ## RELATED PROJECTS
 
-[jruby-scala](http://rubygems.org/gems/jruby-scala): Allows you to use Ruby Procs as Scala functions, including Scala traits into Ruby modules, and more
+[jruby-scala](http://rubygems.org/gems/jruby-scala): Allows you to use Ruby Procs as Scala functions, including Scala traits into Ruby modules, and more.
+
 [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections): Eases the pain of passing JRuby and Scala collections back and forth
 
 
