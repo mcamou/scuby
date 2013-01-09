@@ -8,7 +8,7 @@
     <groupId>cc.abstra.pasilla</groupId>
     <artifactId>scuby</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
     <name>Scuby</name>
     <description>A simple library to ease integration between Scala and JRuby</description>
     <url>http://github.com/abstracc/scuby</url>
@@ -45,7 +45,8 @@
         </developer>
     </developers>
     <properties>
-        <scala.version>2.9.2</scala.version>
+        <scala.version>2.10.0</scala.version>
+        <scala.library.version>2.10</scala.library.version>
         <jruby.version>1.6.7</jruby.version>
         <specs2.version>1.11</specs2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -71,7 +72,7 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_${scala.version}</artifactId>
+            <artifactId>specs2_${scala.library.version}</artifactId>
             <version>${specs2.version}</version>
             <scope>test</scope>
         </dependency>
