@@ -25,6 +25,19 @@ trait RubyObj {
   def send[T](name: Symbol, args: Any*) = (new RubyMethod[T](this, name))(args:_*)
 
   /**
+   * Convenience method. Call a method on the wrapped object indicating its return type, only if the
+   * object responds to that method
+   * @param T The expected class of the return value
+   * @param name The method name
+   * @param args The method parameters
+   * @return If the object doesn't respond to the method, return None. Otherwise, the wrapped return value of the method wrapped in a Some
+   * @throws ClassCastException if the return value is not of the expected class
+   */
+  def sendOpt[T](name: Symbol, args: Any*) = {
+    if (respondTo_?(name)) Some((new RubyMethod[T](this, name))(args:_*)) else None
+  }
+
+  /**
    * Convenience method to call a method on the wrapped object, expecting a RubyObj as a return value
    * @param name The method name
    * @param args The method parameters
@@ -33,6 +46,16 @@ trait RubyObj {
    * @see send
    */
   def ! (name: Symbol, args: AnyRef*) = send[RubyObj](name, args:_*)
+
+  /**
+   * Convenience method to call a method on the wrapped object if it exists, expecting an Option[RubyObj] as a return value
+   * @param name The method name
+   * @param args The method parameters
+   * @return Same as sendOpt
+   * @throws ClassCastException if the return value is not a RubyObj
+   * @see sendOpt
+   */
+  def !? (name: Symbol, args: AnyRef*) = sendOpt[RubyObj](name, args:_*)
 
   /**
    * Get an object that represents a Ruby method for this object, expecting an AnyRef as return value

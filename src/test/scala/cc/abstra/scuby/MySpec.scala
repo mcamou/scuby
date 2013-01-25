@@ -19,6 +19,18 @@ class BasicTest extends SpecificationWithJUnit  {
       length must beEqualTo(3)
     }
 
+    "send methods to Ruby objects when the method exists" in {
+      val array1:RubyObj = eval("[1,2,3]")
+      val length = array1.sendOpt[Long]('length)
+      length must beEqualTo(Some(3))
+    }
+
+    "send methods to Ruby objects" in {
+      val array1:RubyObj = eval("[1,2,3]")
+      val length = array1.sendOpt[Long]('non_existent_method)
+      length must beEqualTo(None)
+    }
+
     "create Ruby objects of a given class with new RubyObject" in {
       val array1:RubyObj = eval("[]")
       val array2 = new RubyObject('Array)
