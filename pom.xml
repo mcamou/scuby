@@ -8,7 +8,7 @@
     <groupId>cc.abstra.pasilla</groupId>
     <artifactId>scuby</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.9.1</version>
+    <version>0.1.9.2</version>
     <name>Scuby</name>
     <description>A simple library to ease integration between Scala and JRuby</description>
     <url>http://github.com/abstracc/scuby</url>
@@ -47,8 +47,8 @@
     <properties>
         <scala.version>2.10.0</scala.version>
         <scala.library.version>2.10</scala.library.version>
-        <jruby.version>1.6.7</jruby.version>
-        <specs2.version>1.11</specs2.version>
+        <jruby.version>1.7.2</jruby.version>
+        <specs2.version>1.13</specs2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -89,13 +89,14 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.2</version>
 		        <configuration>
                     <args>
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
                         <arg>-explaintypes</arg>
                         <arg>-optimise</arg>
+                        <arg>-feature</arg>
                     </args>
                     <recompileMode>modified-only</recompileMode>
 		        </configuration>
@@ -130,7 +131,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.6</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -138,6 +139,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>

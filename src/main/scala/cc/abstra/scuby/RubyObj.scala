@@ -1,9 +1,10 @@
 package cc.abstra.scuby
 
 import org.jruby.{RubyObject => JRubyObject}
-import JRuby.str2sym
-import java.lang.reflect.{InvocationHandler, Method, Proxy}
 import org.jruby.javasupport.JavaUtil
+import java.lang.reflect.{InvocationHandler, Method, Proxy}
+import scala.reflect.ClassTag
+import JRuby.str2sym
 
 /**
  * A wrapped Ruby object. Adds convenience methods to call the JRuby methods.
@@ -106,8 +107,8 @@ trait RubyObj {
    *         time.
    * @see http://stackoverflow.com/questions/11810414/generating-a-scala-class-automatically-from-a-trait
    */
-  def as[T: ClassManifest]: T = {
-    val theClass = classManifest[T].erasure.asInstanceOf[Class[T]]
+  def as[T](implicit classTag: ClassTag[T]): T = {
+    val theClass = classTag.runtimeClass.asInstanceOf[Class[T]]
     // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: cc.abstra.scuby.test.ExtendedTest and cc.abstra.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
     //JRuby.ruby.getInstance(obj, theClass).asInstanceOf[T]
     theClass.cast(

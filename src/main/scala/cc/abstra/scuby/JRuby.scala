@@ -14,6 +14,7 @@ import org.jruby.exceptions.RaiseException
 import org.jruby.{RubyInstanceConfig,CompatVersion}
 import RubyInstanceConfig.CompileMode
 import scala.collection.JavaConversions._
+import scala.language.implicitConversions
 
 /**
  * This trait is one of the main entry points into Scuby. Including it allows you to
@@ -170,7 +171,7 @@ object JRuby extends JRuby {
   private[scuby] def handleException[T](func: => T) = try {
     func
   } catch {
-    case e => e.getCause match {
+    case e:Throwable => e.getCause match {
         case raiseEx: RaiseException => throw RubyException(raiseEx.getException)
         case _ => throw e
       }
