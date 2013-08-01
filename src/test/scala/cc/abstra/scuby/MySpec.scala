@@ -14,84 +14,84 @@ class BasicTest extends SpecificationWithJUnit  {
     }
 
     "send methods to Ruby objects" in {
-      val array1:RubyObj = eval("[1,2,3]")
+      val array1 = evalRuby("[1,2,3]")
       val length = array1.send[Long]('length)
       length must beEqualTo(3)
     }
 
     "send methods to Ruby objects when the method exists" in {
-      val array1:RubyObj = eval("[1,2,3]")
+      val array1 = evalRuby("[1,2,3]")
       val length = array1.sendOpt[Long]('length)
       length must beEqualTo(Some(3))
     }
 
-    "send methods to Ruby objects" in {
-      val array1:RubyObj = eval("[1,2,3]")
-      val length = array1.sendOpt[Long]('non_existent_method)
-      length must beEqualTo(None)
+    "Forward equals to ==" in {
+      val array1 = evalRuby("[1, 2, 3]")
+      val array2 = evalRuby("[1, 2, 3]")
+      array1 must beEqualTo(array2)
     }
 
     "create Ruby objects of a given class with new RubyObject" in {
-      val array1:RubyObj = eval("[]")
+      val array1 = evalRuby("[]")
       val array2 = new RubyObject('Array)
       array1 must beEqualTo(array2)
     }
 
     "create Ruby objects of a given class with RubyClass" in {
-      val array1:RubyObj = eval("[]")
+      val array1 = evalRuby("[]")
       val array2 = RubyClass('Array) ! 'new
       array1 must beEqualTo(array2)
     }
 
     "create Ruby Symbols" in {
-      val sym:RubyObj = eval(":foo")
+      val sym = evalRuby(":foo")
       %('foo) must beEqualTo(sym)
     }
 
     "implicitly convert Scala symbols to Ruby symbols" in {
-      val sym:RubyObj = eval(":foo")
-      val sym2:RubyObj = 'foo
+      val sym = evalRuby(":foo")
+      val sym2: RubyObj = 'foo
       sym must beEqualTo(sym2)
     }
 
     "forward require to Ruby" in {
       require("test.rb")
-      val array1:RubyObj = eval("[]")
-      val array2:RubyObj = eval("get_empty_array")
+      val array1: RubyObj = evalRuby("[]")
+      val array2: RubyObj = evalRuby("get_empty_array")
       array1 must beEqualTo(array2)
     }
 
     "be able to check if a Ruby object is of a given class" in {
-      val array = eval[RubyObj]("[]")
+      val array = evalRuby("[]")
       array.isA_?('Array) must beTrue
       array.isA_?('Hash) must beFalse
       array.isA_?('Object) must beTrue
     }
 
     "be able to check if a Ruby object responds to a method" in {
-      val array = eval[RubyObj]("[]")
+      val array = evalRuby("[]")
       array.respondTo_?('length) must beTrue
       array.respondTo_?('foo) must beFalse
       array.respondTo_?("[]") must beTrue
     }
 
     "retrieve Ruby Array elements with parentheses" in {
-      val array1:RubyObj = eval("['foo','bar','baz']")
+      val array1 = evalRuby("['foo','bar','baz']")
       array1(0) must beEqualTo("foo")
       array1(1) must beEqualTo("bar")
       array1(2) must beEqualTo("baz")
     }
 
     "retrieve Ruby Hash elements with parentheses" in {
-      val hash:RubyObj = eval("{ :foo => 1, :bar => 2, :baz => 3 }")
+      val hash = evalRuby("{ :foo => 1, :bar => 2, :baz => 3 }")
       hash('foo) must beEqualTo(1)
     }
 
     "chain Hash calls" in {
-      val hash:RubyObj = eval(
-                                """{ :foo => {:x => 'foo x', :y => 'foo y'},
-                                     :bar => {:x => 'bar x', :y => 'bar y'},
-                                     :baz => {:x => 'baz x', :y => 'baz y'} }""")
+      val hash = evalRuby(
+                           """{ :foo => {:x => 'foo x', :y => 'foo y'},
+                                :bar => {:x => 'bar x', :y => 'bar y'},
+                                :baz => {:x => 'baz x', :y => 'baz y'} }""")
       hash('foo, 'x) must beEqualTo("foo x")
       hash('bar, 'y) must beEqualTo("bar y")
     }
@@ -109,8 +109,8 @@ class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
   "Scuby" should {
     "create an object with parameters using the RubyObject constructor" in {
       val person = new RubyObject('Person, "Eccentrica", "Gallumbits")
-      val firstName:String = person send 'firstname
-      val lastName:String = person send 'lastname
+      val firstName: String = person send 'firstname
+      val lastName: String = person send 'lastname
       firstName must beEqualTo("Eccentrica")
       lastName must beEqualTo("Gallumbits")
     }
@@ -157,16 +157,9 @@ class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
       zaphod1 must beEqualTo(zaphod2)
     }
 
-    "get a reference to a Ruby method that can later be used" in {
-      val getPerson = backend --> 'get_person
-      val arthur1 = getPerson("Arthur")
-      val arthur2 = backend ! ('get_person, "Arthur")
-      arthur1 must beEqualTo(arthur2)
-    }
-
     "call a Ruby method which returns a Java object" in {
       val zaphod = new RubyObject('Person, "Zaphod", "Beeblebrox")
-      val label:JLabel = zaphod.send[JLabel]('get_label)
+      val label: JLabel = zaphod.send[JLabel]('get_label)
       label.getText must beEqualTo("Zaphod Beeblebrox")
     }
 

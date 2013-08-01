@@ -20,7 +20,7 @@ To add Scuby to a Maven project, just add the following dependency to your pom.x
 <dependency>
   <groupId>cc.abstra.pasilla</groupId>
   <artifactId>scuby</artifactId>
-  <version>0.1.8</version>
+  <version>0.1.9.3</version>
 </dependency>
 ```
 
@@ -87,13 +87,14 @@ object Main {
     require("example") 
 
     // Eval a Ruby statement discarding the return value
-    eval("import Core") 
+    evalIgnore("import Core")
 
     // Eval a Ruby statement that returns a Ruby object
-    val array = eval[RubyObj]("[]")
+    val array = evalRuby("[]")
 
-    // Or with type inference
-    val array2:RubyObj = eval("[]")
+    // or that returns a Scala/Java object or primitive
+    val array2 = eval[Int]("[1, 2, 3].length")
+    val array2: Int = eval("[1, 2, 3].length")
 
     // Create a Ruby object
     val array3 = new RubyObject('Array)
@@ -133,14 +134,6 @@ object Main {
 
     // Modify/add an element to a Collection (or anything that implements []=)
     people(2) = RubyClass('Person) ! ('new, "Arthur", "Dent")
-
-    // Get a reference to a Ruby method that can later be called
-    val getPerson = backEnd --> 'get_person
-
-    // Call the method. Returns an AnyRef. With the above, these 2 lines are
-    // equivalent:
-    getPerson("Zaphod") 
-    backEnd('get_person, "Zaphod")
 
     // Call a Ruby method which returns a Java object, in a type-safe way
     val label = person.send[JLabel]('get_label)
@@ -189,9 +182,11 @@ This is the gist of it. Basically we can create Ruby objects, call methods on th
 [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections): Eases the pain of passing JRuby and Scala collections back and forth
 
 
-## NEXT STEPS AND IDEAS (for 1.0)
+## NEXT STEPS AND IDEAS
 
 Calling JRuby from Scala:
+
+* Use typeclasses to remove all the explicit wrapping of org.jruby.RubyObject's into cc.abstra.scuby.RubyObj's
 
 * Transparently wrap Ruby collections in Scala collections, so you can use them with `foreach`, `for`, `map`, `foldLeft`, `foldRight`, etc... (see [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections))
 
@@ -213,7 +208,7 @@ Calling Scala from JRuby (although lots of it is handled automatically by JRuby)
 
 * Wrapping the Scala collections with their Ruby equivalents. (See [jruby-scala-collections](https://github.com/arturaz/jruby-scala-collections))
 
-* Add an `Object#to_scala` method which wraps the Ruby Object in a Scuby `RubyObj`. Ideally the wrapping should be done automatically but I'm not totally sure if that's possible.
+* Add an `Object#to_scala` method which wraps the Ruby Object in a Scuby `RubyObj`. Ideally the wrapping should be done automatically but I'm not totally sure if that's possible. This will probably not be necessary once I correctly use typeclasses
 
 * Create a scala top-level function, so you can do, i.e., `scala.mutable.List` instead of `Java::ScalaMutable::List`
 

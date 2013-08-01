@@ -8,7 +8,7 @@
     <groupId>cc.abstra.pasilla</groupId>
     <artifactId>scuby</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.9.2</version>
+    <version>0.1.9.3</version>
     <name>Scuby</name>
     <description>A simple library to ease integration between Scala and JRuby</description>
     <url>http://github.com/abstracc/scuby</url>
@@ -45,10 +45,11 @@
         </developer>
     </developers>
     <properties>
-        <scala.version>2.10.0</scala.version>
+        <scala.version>2.10.2</scala.version>
         <scala.library.version>2.10</scala.library.version>
-        <jruby.version>1.7.2</jruby.version>
-        <specs2.version>1.13</specs2.version>
+        <jruby.version>1.7.4</jruby.version>
+        <specs2.version>2.1.1</specs2.version>
+        <scala.maven.plugin.version>3.1.5</scala.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -89,7 +90,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${scala.maven.plugin.version}</version>
 		        <configuration>
                     <args>
                         <arg>-unchecked</arg>
@@ -153,18 +154,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -181,7 +171,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${scala.maven.plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>

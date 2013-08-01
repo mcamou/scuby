@@ -2,9 +2,12 @@ package cc.abstra.scuby
 
 import org.jruby.{RubyObject => JRubyObject}
 import org.jruby.javasupport.JavaUtil
+
 import java.lang.reflect.{InvocationHandler, Method, Proxy}
-import scala.reflect.ClassTag
+
 import JRuby.str2sym
+
+import scala.reflect.ClassTag
 
 /**
  * A wrapped Ruby object. Adds convenience methods to call the JRuby methods.
@@ -16,14 +19,24 @@ trait RubyObj {
   val obj: JRubyObject
 
   /**
-   * Convenience method. Call a method on the wrapped object indicating its return type
+   * Call a method on the wrapped object indicating its return type
    * @param T The expected class of the return value
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
    * @throws ClassCastException if the return value is not of the expected class
    */
-  def send[T](name: Symbol, args: Any*) = (new RubyMethod[T](this, name))(args:_*)
+  def send[T](name: Symbol, args: Any*)(implicit tag: ClassTag[T]): T = JRuby.send[T](obj, name.name, args:_*)
+
+  /**
+   * Call a method on the wrapped object ignoring its return type
+   * @param T The expected class of the return value
+   * @param name The method name
+   * @param args The method parameters
+   * @return The wrapped return value of the method
+   * @throws ClassCastException if the return value is not of the expected class
+   */
+  def call(name: Symbol, args: Any*) { JRuby.sendUnit(obj, name.name, args:_*) }
 
   /**
    * Convenience method. Call a method on the wrapped object indicating its return type, only if the
@@ -34,36 +47,31 @@ trait RubyObj {
    * @return If the object doesn't respond to the method, return None. Otherwise, the wrapped return value of the method wrapped in a Some
    * @throws ClassCastException if the return value is not of the expected class
    */
-  def sendOpt[T](name: Symbol, args: Any*) = {
-    if (respondTo_?(name)) Some((new RubyMethod[T](this, name))(args:_*)) else None
+  def sendOpt[T](name: Symbol, args: Any*)(implicit tag: ClassTag[T]): Option[Any] = {
+    if (respondTo_?(name)) Some(JRuby.send[T](obj, name.name, args:_*)) else None
   }
 
   /**
-   * Convenience method to call a method on the wrapped object, expecting a RubyObj as a return value
+   * Call a method on the wrapped object, expecting a RubyObj as a return value
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
    * @throws ClassCastException if the return value is not a RubyObj
    * @see send
    */
-  def ! (name: Symbol, args: AnyRef*) = send[RubyObj](name, args:_*)
+  def ! (name: Symbol, args: Any*): RubyObj = JRuby.sendRubyObj(obj, name, args:_*)
 
   /**
-   * Convenience method to call a method on the wrapped object if it exists, expecting an Option[RubyObj] as a return value
+   * Call a method on the wrapped object if it exists, expecting an Option[RubyObj] as a return value
    * @param name The method name
    * @param args The method parameters
    * @return Same as sendOpt
    * @throws ClassCastException if the return value is not a RubyObj
    * @see sendOpt
    */
-  def !? (name: Symbol, args: AnyRef*) = sendOpt[RubyObj](name, args:_*)
-
-  /**
-   * Get an object that represents a Ruby method for this object, expecting an AnyRef as return value
-   * @param name The method name
-   * @return The object that represents the method
-   */
-  def --> (name: Symbol) = new RubyMethod[AnyRef](this, name)
+  def !? (name: Symbol, args: Any*): Option[RubyObj] = {
+    if (respondTo_?(name)) Some(JRuby.sendRubyObj(obj, name.name, args:_*)) else None
+  }
 
   /**
    * Convenient access to Array- or Hash-like Ruby objects.
@@ -76,10 +84,15 @@ trait RubyObj {
     if (respondTo_?('call)) send[AnyRef]('call, args:_*)
     else if (respondTo_?('invoke)) send[AnyRef]('invoke, args:_*)
     else {
-      val last = (this /: args.slice(0, args.length - 1)) { (result, key) => send[RubyObj]("[]", key) }
+      val last = (this /: args.slice(0, args.length - 1)) { (result, key) => this ! ("[]", key) }
 
       // The last/only one is excluded from the fold because of the return type (AnyRef vs. RubyObj)
-      last.send[AnyRef]("[]",args(args.length - 1))
+      last.send[AnyRef]("[]", args(args.length - 1)) match {
+        case obj: JRubyObject => new RubyObject(obj)
+        case obj@_ => obj
+      }
+
+
     }
   }
 
@@ -107,15 +120,21 @@ trait RubyObj {
    *         time.
    * @see http://stackoverflow.com/questions/11810414/generating-a-scala-class-automatically-from-a-trait
    */
-  def as[T](implicit classTag: ClassTag[T]): T = {
-    val theClass = classTag.runtimeClass.asInstanceOf[Class[T]]
-    // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: cc.abstra.scuby.test.ExtendedTest and cc.abstra.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
+  def as[T](implicit tag: ClassTag[T]): T = {
+    val clazz = tag.runtimeClass.asInstanceOf[Class[T]]
+    // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: cc.abstra.scuby.test.ExtendedTest and
+    // cc.abstra.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
     //JRuby.ruby.getInstance(obj, theClass).asInstanceOf[T]
-    theClass.cast(
+
+    // TODO Is there a simpler way of doing this using JRuby?
+    // TODO RubyObj/RubyObject wrapping of returned org.jruby.RubyObject values
+
+    clazz.cast(
                    Proxy.newProxyInstance(
-                                           theClass.getClassLoader(),
-                                           Array(theClass),
+                                           clazz.getClassLoader(),
+                                           Array(clazz),
                                            new InvocationHandler {
+                                             //TODO: Handle all the new send/sendUnit/sendRubyObj madness
                                              def invoke(target: AnyRef, method: Method, params: Array[AnyRef]): AnyRef = {
                                                val splitName = method.getName split '$'
                                                val methodName = if (splitName.length == 1) splitName(0)
@@ -150,7 +169,10 @@ trait RubyObj {
   /**
    * Convenient access to Array- or Hash-like Ruby objects
    */
-  def update[T](key: Any, value: T): Unit = send[T]("[]=", key, value)
+  def update[T](key: Any, value: T)(implicit tag: ClassTag[T]) {
+    if (tag.runtimeClass == classOf[RubyObj]) this ! ("[]=", key, value)
+    else send[T]("[]=", key, value)
+  }
 
   /**
    * Delegate toString to the Ruby object's to_s
@@ -161,7 +183,7 @@ trait RubyObj {
   /**
    * Delegate equals to the Ruby object's ==
    */
-  override def equals(other:Any) = other match {
+  override def equals(other: Any) = other match {
     case otherRef: RubyObj => send[Boolean]("==", otherRef.obj)
     case _ => false
   }
@@ -183,7 +205,7 @@ class RubyObject (val obj: JRubyObject) extends RubyObj {
    * @param rubyClassName Name of the Ruby class to create the object
    * @param args Any parameters to the constructor of the Ruby class
    */
-  def this(rubyClassName: Symbol, args: AnyRef*) = this(RubyClass(rubyClassName).send[RubyObj]('new, args:_*).obj)
+  def this(rubyClassName: Symbol, args: AnyRef*) = this((RubyClass(rubyClassName) ! ('new, args:_*)).obj)
 }
 
 /**
@@ -191,13 +213,14 @@ class RubyObject (val obj: JRubyObject) extends RubyObj {
  */
 object % {
   // TODO Handle a cache of Scala symbol -> Ruby symbol mappings
+  // TODO Perhaps there's a better way to do this by hooking directly into JRuby?
   /**
    * Creates a Ruby Symbol from a Scala Symbol.
    * @param sym the Scala symbol
    * @return a RubyObj that represents the corresponding Ruby Symbol
    */
-  def apply (sym: Symbol) = JRuby.eval[RubyObj](":'"+sym.name+"'")
-  def apply (sym: String) = JRuby.eval[RubyObj](":'"+sym+"'")
+  def apply (sym: Symbol) = JRuby.evalRuby(":'"+sym.name+"'")
+  def apply (sym: String) = JRuby.evalRuby(":'"+sym+"'")
 }
 
 /**
@@ -206,25 +229,11 @@ object % {
 object RubyClass {
   // TODO Handle a cache of Scala symbol -> Ruby class mappings
   // TODO Allow extending a Ruby class from Scala
+  // TODO Perhaps there's a better way to do this by hooking directly into JRuby?
   /**
    * Returns the Ruby Class object for the given class
    * @param name The required class name
    * @return The associated Class object as a RubyObj
    */
-  def apply(name: Symbol) = JRuby.eval[RubyObj](name.name)
-}
-
-/**
- * Represents a callable Ruby method
- * @param T The expected class of the return value
- */
-class RubyMethod[T] private[scuby](target: RubyObj, name: Symbol) {
-  import JRuby._
-
-  /**
-   * Call the method
-   * @param args The method parameters
-   * @return The wrapped results from the method
-   */
-  def apply(args: Any*): T = send[T](target.obj, name.name, args:_*)
+  def apply(name: Symbol) = JRuby.evalRuby(name.name)
 }
