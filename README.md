@@ -20,7 +20,7 @@ To add Scuby to a Maven project, just add the following dependency to your pom.x
 <dependency>
   <groupId>cc.abstra.pasilla</groupId>
   <artifactId>scuby</artifactId>
-  <version>0.1.9.3</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
