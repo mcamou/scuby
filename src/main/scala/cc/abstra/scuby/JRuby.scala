@@ -36,8 +36,6 @@ trait JRuby {
   class UnwrappedCallException(method: String)
     extends RuntimeException(s"If you expect to get back a RubyObj/RubyObject, use the specialized method $method")
 
-  class NoReturnTypeException extends RuntimeException("No return type provided. Did you remember to include the generic in the call?")
-
   import JRuby.{handleException,verifyType,unwrap,ruby,verifyRubyObj}
 
   /* A few implicits to make the programmer's life easier. Some of these should be replaced with typeclasses */
@@ -215,7 +213,6 @@ object JRuby extends JRuby {
    */
   private[scuby] def verifyType[T](obj: Any, method: String)(implicit tag: ClassTag[T]): T = {
     if (tag.runtimeClass == classOf[RubyObj]) throw new UnwrappedCallException(method)
-    if (tag.runtimeClass == classOf[Nothing]) throw new NoReturnTypeException
 
     try {
       obj.asInstanceOf[T]
