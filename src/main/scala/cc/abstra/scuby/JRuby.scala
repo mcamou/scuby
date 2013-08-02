@@ -231,6 +231,7 @@ object JRuby extends JRuby {
    */
   private[scuby] def verifyRubyObj(obj: Any): RubyObj = {
     obj match {
+      case null => null
       case obj: JRubyObject => new RubyObject(obj)
       case obj: RubyObj => obj
       case _ => throw new IllegalTypeConversion(obj.getClass, classOf[RubyObject])
