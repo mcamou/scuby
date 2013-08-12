@@ -4,7 +4,7 @@
  * Base classes/objects/traits for the scuby library
  */
 
-package cc.abstra.scuby
+package com.tecnoguru.scuby
 
 import java.util.logging.{Logger, Level}
 

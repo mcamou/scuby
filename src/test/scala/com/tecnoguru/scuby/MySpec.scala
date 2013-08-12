@@ -1,11 +1,13 @@
-package cc.abstra.scuby.test
+package com.tecnoguru.scuby.test
 
 import org.specs2.mutable.SpecificationWithJUnit
 
-import cc.abstra.scuby._
-import JRuby._
 import org.specs2.specification.BeforeExample
+
 import javax.swing.JLabel
+
+import com.tecnoguru.scuby._
+import JRuby._
 
 class BasicTest extends SpecificationWithJUnit  {
   "Scuby" should {

@@ -1,4 +1,4 @@
-package cc.abstra.scuby
+package com.tecnoguru.scuby
 
 /**
  * Misc. utility methods that can be called either from Scala or JRuby

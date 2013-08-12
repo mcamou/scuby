@@ -1,4 +1,5 @@
-package cc.abstra.scuby
+package com.tecnoguru.scuby
+
 import org.jruby.{RubyException => JRubyException}
 
 /**

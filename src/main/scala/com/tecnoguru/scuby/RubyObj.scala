@@ -1,4 +1,4 @@
-package cc.abstra.scuby
+package com.tecnoguru.scuby
 
 import org.jruby.{RubyObject => JRubyObject}
 import org.jruby.javasupport.JavaUtil
