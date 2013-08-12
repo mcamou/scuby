@@ -64,7 +64,7 @@ trait JRuby {
   /**
    * Evaluate an arbitrary Ruby expression, ignoring the return value
    * @param expression The ruby expression to evaluate
-   * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
+   * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a com.tecnoguru.scuby.RubyObj, otherwise it's returned as-is.
    * @see org.jruby.embed.ScriptingContainer#runScriptlet
    * @see wrap
    */
@@ -75,7 +75,7 @@ trait JRuby {
   /**
    * Evaluate an arbitrary Ruby expression, expecting to get back a RubyObj
    * @param expression The ruby expression to evaluate
-   * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
+   * @return The expression's return value. If it's an org.jruby.RubyObj it's wrapped in a com.tecnoguru.scuby.RubyObj, otherwise it's returned as-is.
    * @see org.jruby.embed.ScriptingContainer#runScriptlet
    * @see wrap
    */
@@ -95,7 +95,7 @@ trait JRuby {
  * @see RubyObj
  */
 object JRuby extends JRuby {
-  val log = Logger getLogger "cc.abstra.scuby"
+  val log = Logger getLogger "com.tecnoguru.scuby"
 
   private var ruby0: Option[ScriptingContainer] = None
   private var scope0 = LocalContextScope.SINGLETON
@@ -145,7 +145,7 @@ object JRuby extends JRuby {
    * @param target The object on which to invoke the method
    * @param name The name of the method to invoke
    * @param args The arguments to the method
-   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
+   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a com.tecnoguru.scuby.RubyObj, otherwise it's returned as-is.
    * @see javax.script.Invocable#invokeMethod
    * @see wrap[T]
    * @see unwrap[T
@@ -160,7 +160,7 @@ object JRuby extends JRuby {
    * @param target The object on which to invoke the method
    * @param name The name of the method to invoke
    * @param args The arguments to the method
-   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
+   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a com.tecnoguru.scuby.RubyObj, otherwise it's returned as-is.
    * @see javax.script.Invocable#invokeMethod
    * @see wrap[T]
    * @see unwrap[T
@@ -175,7 +175,7 @@ object JRuby extends JRuby {
    * @param target The object on which to invoke the method
    * @param name The name of the method to invoke
    * @param args The arguments to the method
-   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a cc.abstra.scuby.RubyObj, otherwise it's returned as-is.
+   * @return The method's return value. If it's an org.jruby.RubyObj it's wrapped in a com.tecnoguru.scuby.RubyObj, otherwise it's returned as-is.
    * @see javax.script.Invocable#invokeMethod
    * @see wrap[T]
    * @see unwrap[T
@@ -223,8 +223,8 @@ object JRuby extends JRuby {
   }
 
   /**
-   * Wraps an org.jruby.RubyObject in a cc.abstra.scuby.RubyObj. If the parameter is not an
-   * org.jruby.RubyObject or a cc.abstra.scuby.RubyObj, it throws an exception. This is used to verify return values
+   * Wraps an org.jruby.RubyObject in a com.tecnoguru.scuby.RubyObj. If the parameter is not an
+   * org.jruby.RubyObject or a com.tecnoguru.scuby.RubyObj, it throws an exception. This is used to verify return values
    * from Ruby calls.
    * @param obj The object to wrap
    * @return The wrapped object

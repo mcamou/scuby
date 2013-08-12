@@ -122,8 +122,8 @@ trait RubyObj {
    */
   def as[T](implicit tag: ClassTag[T]): T = {
     val clazz = tag.runtimeClass.asInstanceOf[Class[T]]
-    // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: cc.abstra.scuby.test.ExtendedTest and
-    // cc.abstra.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
+    // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: com.tecnoguru.scuby.test.ExtendedTest and
+    // com.tecnoguru.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
     //JRuby.ruby.getInstance(obj, theClass).asInstanceOf[T]
 
     // TODO Is there a simpler way of doing this using JRuby?
