@@ -43,11 +43,11 @@
         </developer>
     </developers>
     <properties>
-        <scala.version>2.10.2</scala.version>
+        <scala.version>2.10.3</scala.version>
         <scala.library.version>2.10</scala.library.version>
-        <jruby.version>1.7.4</jruby.version>
-        <specs2.version>2.1.1</specs2.version>
-        <scala.maven.plugin.version>3.1.5</scala.maven.plugin.version>
+        <jruby.version>1.7.9</jruby.version>
+        <specs2.version>2.3.7</specs2.version>
+        <scala.maven.plugin.version>3.1.6</scala.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -63,15 +63,29 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+        <!-- Here because of a dependency problem with JRuby 1.7.9 - probably remove with JRuby 1.7.10 -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <groupId>org.jruby.joni</groupId>
+            <artifactId>joni</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-core_${scala.library.version}</artifactId>
+            <version>${specs2.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_${scala.library.version}</artifactId>
+            <artifactId>specs2-matcher_${scala.library.version}</artifactId>
+            <version>${specs2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2-matcher-extra_${scala.library.version}</artifactId>
             <version>${specs2.version}</version>
             <scope>test</scope>
         </dependency>
@@ -93,7 +107,6 @@
                     <args>
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
-                        <arg>-explaintypes</arg>
                         <arg>-feature</arg>
                     </args>
                     <recompileMode>modified-only</recompileMode>
@@ -109,22 +122,18 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <buildcommands>
-                        <buildcommand>ch.epfl.lamp.sdt.core.scalabuilder</buildcommand>
-                    </buildcommands>
-                    <additionalProjectnatures>
-                        <projectnature>ch.epfl.lamp.sdt.core.scalanature</projectnature>
-                    </additionalProjectnatures>
-                    <classpathContainers>
-                        <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-                        <classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
-                    </classpathContainers>
-                </configuration>
+                <groupId>com.mmakowski</groupId>
+                <artifactId>maven-specs2-plugin</artifactId>
+                <version>0.4.2</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run-specs</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,15 +1,14 @@
-package com.tecnoguru.scuby.test
+package com.tecnoguru.scuby
 
-import org.specs2.mutable.SpecificationWithJUnit
+import org.specs2.mutable._
 
 import org.specs2.specification.BeforeExample
 
 import javax.swing.JLabel
 
-import com.tecnoguru.scuby._
 import JRuby._
 
-class BasicTest extends SpecificationWithJUnit  {
+class BasicSpec extends Specification {
   "Scuby" should {
     "evaluate ruby code" in {
       eval[Long]("1 + 1") must beEqualTo(2)
@@ -100,7 +99,7 @@ class BasicTest extends SpecificationWithJUnit  {
   }
 }
 
-class ExtendedTest extends SpecificationWithJUnit with BeforeExample {
+class ExtendedSpec extends Specification with BeforeExample {
   var backend:RubyObj = null
 
   def before = {
