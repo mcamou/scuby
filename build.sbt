@@ -1,12 +1,14 @@
 import de.johoop.jacoco4sbt._
 import JacocoPlugin._
+import xerial.sbt.Sonatype.SonatypeKeys
+import SonatypeKeys._
 
 val jrubyVersion = "1.7.9"
 val specs2Version = "2.3.7"
 
 name := "Scuby"
 
-version := "0.2.2-SNAPSHOT"
+version := "0.2.3-SNAPSHOT"
 
 isSnapshot := true
 
@@ -36,34 +38,28 @@ jacoco.settings
 
 // TODO Not working yet
 // Sonatype Maven repo settings
-// See http://www.scala-sbt.org/0.12.2/docs/Community/Using-Sonatype.html
-publishMavenStyle := true
+// See https://github.com/xerial/sbt-sonatype
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+xerial.sbt.Sonatype.sonatypeSettings
 
-publishArtifact in Test := false
+organization := "com.tecnoguru.scuby"
 
-licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php"))
-
-homepage := Some(url("http://github.com/mcamou/scuby"))
+profileName := "com.tecnoguru"
 
 pomExtra := (
-            <scm>
-              <url>git://github.com/mcamou/scuby.git</url>
-              <connection>scm:git:git@github.com:mcamou/scuby</connection>
-              <developerConnection>scm:git:git@github.com:mcamou/scuby</developerConnection>
-            </scm>
+            <url>http://github.com/mcamou/scuby</url>
+                <licenses>
+                  <license>
+                    <name>BSD</name>
+                    <url>http://www.opensource.org/licenses/bsd-license.php</url>
+                  </license>
+                </licenses>
+                <scm>
+                  <url>git://github.com/mcamou/scuby.git</url>
+                  <connection>scm:git:git@github.com:mcamou/scuby</connection>
+                  <developerConnection>scm:git:git@github.com:mcamou/scuby</developerConnection>
+                </scm>
                 <inceptionYear>2009</inceptionYear>
-                <organization>
-                  <name>tecnoguru.com</name>
-                  <url>http://www.github.com/mcamou</url>
-                </organization>
                 <developers>
                   <developer>
                     <id>mcamou</id>

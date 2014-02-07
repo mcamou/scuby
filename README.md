@@ -14,13 +14,19 @@ The project has been sponsored in part by [Abstra.cc](http://www.abstra.cc) wher
 
 ## ADDING SCUBY TO YOUR PROJECT
 
-To add Scuby to a Maven project, just add the following dependency to your pom.xml:
+To add Scuby to a Maven project, just add the following dependency to your build.sbt:
+
+```
+libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.2"
+```
+
+or if you use Maven, add this to your pom.xml:
 
 ```xml
 <dependency>
   <groupId>com.tecnoguru</groupId>
-  <artifactId>scuby</artifactId>
-  <version>0.2.1</version>
+  <artifactId>scuby_2.10</artifactId>
+  <version>0.2.2</version>
 </dependency>
 ```
 
