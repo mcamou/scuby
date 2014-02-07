@@ -28,9 +28,9 @@ If you use SBT, Gradle, etc.., please convert this to your preferred syntax.
 
 ## DEPENDENCIES
 
-The Scuby pom.xml file includes dependencies on `org.scala-lang.scala-library 2.10.2` and `org.jruby.jruby-complete 1.7.4`. If you don't use Maven or something that understands Maven pom.xml files, you will need to download the corresponding jars and place them in your CLASSPATH.
+The Scuby pom.xml file includes dependencies on `org.scala-lang.scala-library 2.10.3` and `org.jruby.jruby-complete 1.7.9`. If you don't use Maven or something that understands Maven pom.xml files, you will need to download the corresponding jars and place them in your CLASSPATH.
 
-At the moment Scuby is based on JRuby 1.7.4 and Scala 2.10.2, even though it makes almost no use (yet) of the new Java interoperability features of JRuby 1.4+. These should slowly find their way into Scuby as time permits.
+At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits.
 
 ## USAGE
 
