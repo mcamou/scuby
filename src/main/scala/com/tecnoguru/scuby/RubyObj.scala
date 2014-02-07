@@ -1,6 +1,6 @@
 package com.tecnoguru.scuby
 
-import org.jruby.{RubyObject => JRubyObject}
+import org.jruby.{RubyObject => JRubyObject, RubySymbol}
 import org.jruby.javasupport.JavaUtil
 
 import java.lang.reflect.{InvocationHandler, Method, Proxy}
@@ -13,6 +13,29 @@ import scala.reflect.ClassTag
  * A wrapped Ruby object. Adds convenience methods to call the JRuby methods.
  */
 trait RubyObj {
+  // From org.jruby.javasupport.JavaClass.SCALA_NAMES
+  private val scalaNames = Map(
+                                "plus" -> "+",
+                                "minus" -> "-",
+                                "colon" -> ":",
+                                "div" -> "/",
+                                "eq" -> "=",
+                                "less" -> "<",
+                                "greater" -> ">",
+                                "bslash" -> "\\",
+                                "hash" -> "#",
+                                "times" -> "*",
+                                "bang" -> "!",
+                                "at" -> "@",
+                                "percent" -> "%",
+                                "up" -> "^",
+                                "amp" -> "&",
+                                "tilde" -> "~",
+                                "qmark" -> "?",
+                                "bar" -> "|"
+                                )
+
+
   /**
    * The wrapped object
    */
@@ -20,7 +43,7 @@ trait RubyObj {
 
   /**
    * Call a method on the wrapped object indicating its return type
-   * @param T The expected class of the return value
+   * @tparam T The expected class of the return value
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
@@ -30,7 +53,6 @@ trait RubyObj {
 
   /**
    * Call a method on the wrapped object ignoring its return type
-   * @param T The expected class of the return value
    * @param name The method name
    * @param args The method parameters
    * @return The wrapped return value of the method
@@ -41,7 +63,7 @@ trait RubyObj {
   /**
    * Convenience method. Call a method on the wrapped object indicating its return type, only if the
    * object responds to that method
-   * @param T The expected class of the return value
+   * @tparam T The expected class of the return value
    * @param name The method name
    * @param args The method parameters
    * @return If the object doesn't respond to the method, return None. Otherwise, the wrapped return value of the method wrapped in a Some
@@ -91,8 +113,6 @@ trait RubyObj {
         case obj: JRubyObject => new RubyObject(obj)
         case obj@_ => obj
       }
-
-
     }
   }
 
@@ -112,7 +132,7 @@ trait RubyObj {
 
   /**
    * Wrap a RubyObj with a Scala interface
-   * @param T A trait that should declare (some) of the methods of the object. CamelCase -> snail_case conversion is
+   * @tparam T A trait that should declare (some) of the methods of the object. CamelCase -> snail_case conversion is
    *          done automatically, as well as assignmnent to attributes (x_= is converted to x=). Methods that are
    *          implemented in the trait are <b>NOT</b> forwarded.
    * @return A dynamically-generated proxy that forwards each method call to its corresponding Ruby call. Note that
@@ -124,46 +144,28 @@ trait RubyObj {
     val clazz = tag.runtimeClass.asInstanceOf[Class[T]]
     // Doesn't work, test crashes with "java.lang.IncompatibleClassChangeError: com.tecnoguru.scuby.test.ExtendedTest and
     // com.tecnoguru.scuby.test.ExtendedTest$$anonfun$2$$anonfun$apply$127$Person$1 disagree on InnerClasses attribute"
-    //JRuby.ruby.getInstance(obj, theClass).asInstanceOf[T]
+    //JRuby.ruby.getInstance(obj, clazz)
 
-    // TODO Is there a simpler way of doing this using JRuby?
+    // TODO Is there a simpler way of doing this using the JRuby internals?
     // TODO RubyObj/RubyObject wrapping of returned org.jruby.RubyObject values
 
     clazz.cast(
-                   Proxy.newProxyInstance(
-                                           clazz.getClassLoader(),
-                                           Array(clazz),
-                                           new InvocationHandler {
-                                             //TODO: Handle all the new send/sendUnit/sendRubyObj madness
-                                             def invoke(target: AnyRef, method: Method, params: Array[AnyRef]): AnyRef = {
-                                               val splitName = method.getName split '$'
-                                               val methodName = if (splitName.length == 1) splitName(0)
-                                                                else {
-                                                                  val n = if (splitName(0) endsWith "_") splitName(0).substring(0, splitName(0).length - 1)
-                                                                          else splitName(0)
-                                                                  n + (splitName(1) match {
-                                                                    case "plus" => "+"
-                                                                    case "minus" => "-"
-                                                                    case "colon" => ":"
-                                                                    case "div" => "/"
-                                                                    case "eq" => "="
-                                                                    case "less" => "<"
-                                                                    case "greater" => ">"
-                                                                    case "bslash" => "\\"
-                                                                    case "hash" => "#"
-                                                                    case "times" => "*"
-                                                                    case "bang" => "!"
-                                                                    case "at" => "@"
-                                                                    case "percent" => "%"
-                                                                    case "up" => "^"
-                                                                    case "amp" => "&"
-                                                                    case "tilde" => "~"
-                                                                    case "qmark" => "?"
-                                                                    case "bar" => "|"
-                                                                  })
-                                                                }
-                                               send[AnyRef](JavaUtil.getRubyCasedName(methodName), params: _*)
-                                             }}))
+                Proxy.newProxyInstance(
+                                        clazz.getClassLoader,
+                                        Array(clazz),
+                                        new InvocationHandler {
+                                          //TODO: Handle all the new send/sendUnit/sendRubyObj madness
+                                          def invoke(target: AnyRef, method: Method, params: Array[AnyRef]): AnyRef = {
+                                            val splitName = method.getName split '$'
+                                            val methodName = if (splitName.length == 1) splitName(0)
+                                            else {
+                                              val n = if (splitName(0) endsWith "_") splitName(0).substring(0, splitName(0).length - 1)
+                                              else splitName(0)
+
+                                              n + scalaNames(splitName(1))
+                                            }
+                                            send[AnyRef](JavaUtil.getRubyCasedName(methodName), params: _*)
+                                          }}))
   }
 
   /**
@@ -213,14 +215,13 @@ class RubyObject (val obj: JRubyObject) extends RubyObj {
  */
 object % {
   // TODO Handle a cache of Scala symbol -> Ruby symbol mappings
-  // TODO Perhaps there's a better way to do this by hooking directly into JRuby?
   /**
    * Creates a Ruby Symbol from a Scala Symbol.
    * @param sym the Scala symbol
    * @return a RubyObj that represents the corresponding Ruby Symbol
    */
-  def apply (sym: Symbol) = JRuby.evalRuby(":'"+sym.name+"'")
-  def apply (sym: String) = JRuby.evalRuby(":'"+sym+"'")
+  def apply (sym: Symbol): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym.name))
+  def apply (sym: String): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym))
 }
 
 /**
@@ -229,11 +230,11 @@ object % {
 object RubyClass {
   // TODO Handle a cache of Scala symbol -> Ruby class mappings
   // TODO Allow extending a Ruby class from Scala
-  // TODO Perhaps there's a better way to do this by hooking directly into JRuby?
   /**
    * Returns the Ruby Class object for the given class
    * @param name The required class name
    * @return The associated Class object as a RubyObj
    */
-  def apply(name: Symbol) = JRuby.evalRuby(name.name)
+  def apply(name: Symbol): RubyObj = new RubyObject(JRuby.runtime.getClass(name.name))
+  def apply(name: String): RubyObj = new RubyObject(JRuby.runtime.getClass(name))
 }

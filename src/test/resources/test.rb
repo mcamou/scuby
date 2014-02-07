@@ -1,4 +1,4 @@
-require 'java'
+require  'java'
 
 class Person
   attr_accessor :firstname, :lastname
@@ -28,7 +28,7 @@ class Person
   end
 end
 
-module Backend
+class Backend
  def self.get_people
    [
      Person.new("Zaphod","Beeblebrox"),

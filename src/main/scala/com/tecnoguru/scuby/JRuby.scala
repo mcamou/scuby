@@ -8,10 +8,9 @@ package com.tecnoguru.scuby
 
 import java.util.logging.{Logger, Level}
 
-import org.jruby.{RubyObject => JRubyObject}
+import org.jruby.{RubyObject => JRubyObject, Ruby, RubyInstanceConfig, CompatVersion}
 import org.jruby.embed.{ScriptingContainer,LocalContextScope,LocalVariableBehavior}
 import org.jruby.exceptions.RaiseException
-import org.jruby.{RubyInstanceConfig,CompatVersion}
 import RubyInstanceConfig.CompileMode
 
 import scala.collection.JavaConversions._
@@ -51,7 +50,7 @@ trait JRuby {
 
   /**
    * Evaluate an arbitrary Ruby expression, casting and wrapping the return value
-   * @param T The expected class of the return value
+   * @tparam T The expected class of the return value
    * @param expression The ruby expression to evaluate
    * @return The expression's return value.
    * @see org.jruby.embed.ScriptingContainer#runScriptlet
@@ -83,6 +82,12 @@ trait JRuby {
     val obj = handleException(ruby.runScriptlet(expression))
     verifyRubyObj(obj)
   }
+
+  /**
+   * Returns the underlying Ruby runtime
+   * @return The underlying Ruby runtime
+   */
+  def runtime: Ruby = ruby.getProvider.getRuntime
 }
 
 /**
@@ -141,7 +146,7 @@ object JRuby extends JRuby {
   /**
    * Invoke a Ruby method on a Ruby object. The way of doing this in the public Scuby API is by
    * invoking RubyObj.send(name, args). Arguments are unwrapped and the result is wrapped again.
-   * @param T The expected class of the return value
+   * @tparam T The expected class of the return value
    * @param target The object on which to invoke the method
    * @param name The name of the method to invoke
    * @param args The arguments to the method
@@ -195,19 +200,18 @@ object JRuby extends JRuby {
    */
   private[scuby] def unwrap(args: Any*):Seq[_ <: AnyRef] = {
     if (args == null) Array.empty[AnyRef]
-    else args.map { _ match {
+    else args.map {
       case rbObj: RubyObj => rbObj.obj
       case sym: Symbol => %(sym).obj
       case x => x.asInstanceOf[AnyRef] // Needed so we wrap primitives to make the call into JRuby
     }
-                  }
   }
 
   /**
    * Verifies that the object has the correct type or throws a more-readable exception than TypeConversionException.
    * If the parameter is of the correct type, returns it as-is, cast to the class given as type argument. This is
    * used to verify return values from Ruby calls.
-   * @param T The expected class of the return value
+   * @tparam T The expected class of the return value
    * @param obj The object to wrap
    * @return The wrapped object
    */
