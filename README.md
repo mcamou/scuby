@@ -30,7 +30,9 @@ or if you use Maven, add this to your pom.xml:
 </dependency>
 ```
 
-If you use SBT, Gradle, etc.., please convert this to your preferred syntax.
+**NOTE** As of Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` as per Scala packaging conventions.
+
+If you use Gradle or some other build tool, please convert this to your preferred syntax.
 
 ## DEPENDENCIES
 

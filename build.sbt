@@ -42,7 +42,7 @@ jacoco.settings
 
 xerial.sbt.Sonatype.sonatypeSettings
 
-organization := "com.tecnoguru.scuby"
+organization := "com.tecnoguru"
 
 profileName := "com.tecnoguru"
 
