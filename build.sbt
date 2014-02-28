@@ -8,7 +8,7 @@ val specs2Version = "2.3.7"
 
 name := "Scuby"
 
-version := "0.2.3"
+version := "0.2.4-SNAPSHOT"
 
 isSnapshot := true
 
@@ -72,3 +72,5 @@ pomExtra := (
                   </developer>
                 </developers>
             )
+
+addCommandAlias("dist", ";publishSigned;sonatypeRelease")

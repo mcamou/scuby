@@ -26,11 +26,13 @@ or if you use Maven, add this to your pom.xml:
 <dependency>
   <groupId>com.tecnoguru</groupId>
   <artifactId>scuby_2.10</artifactId>
-  <version>0.2.2</version>
+  <version>0.2.3</version>
 </dependency>
 ```
 
-**NOTE** As of Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` as per Scala packaging conventions.
+**NOTE** Starting with Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` as per Scala packaging conventions.
+
+**NOTE** Don't use Scuby 0.2.2, it has a nasty bug where it won't resolve class names that are within modules. Update to Scuby 0.2.3.
 
 If you use Gradle or some other build tool, please convert this to your preferred syntax.
 
