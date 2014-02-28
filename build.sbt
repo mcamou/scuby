@@ -8,7 +8,7 @@ val specs2Version = "2.3.7"
 
 name := "Scuby"
 
-version := "0.2.3-SNAPSHOT"
+version := "0.2.3"
 
 isSnapshot := true
 
@@ -36,7 +36,6 @@ net.virtualvoid.sbt.graph.Plugin.graphSettings
 // https://github.com/sbt/jacoco4sbt/wiki
 jacoco.settings
 
-// TODO Not working yet
 // Sonatype Maven repo settings
 // See https://github.com/xerial/sbt-sonatype
 

@@ -33,7 +33,7 @@ trait RubyObj {
                                 "tilde" -> "~",
                                 "qmark" -> "?",
                                 "bar" -> "|"
-                                )
+                              )
 
 
   /**
@@ -220,7 +220,7 @@ object % {
    * @param sym the Scala symbol
    * @return a RubyObj that represents the corresponding Ruby Symbol
    */
-  def apply (sym: Symbol): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym.name))
+  def apply (sym: Symbol): RubyObj = apply(sym.name)
   def apply (sym: String): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym))
 }
 
@@ -229,12 +229,31 @@ object % {
  */
 object RubyClass {
   // TODO Handle a cache of Scala symbol -> Ruby class mappings
-  // TODO Allow extending a Ruby class from Scala
   /**
    * Returns the Ruby Class object for the given class
    * @param name The required class name
    * @return The associated Class object as a RubyObj
    */
-  def apply(name: Symbol): RubyObj = new RubyObject(JRuby.runtime.getClass(name.name))
-  def apply(name: String): RubyObj = new RubyObject(JRuby.runtime.getClass(name))
+  def apply(name: Symbol): RubyObj = apply(name.name)
+  def apply(name: String): RubyObj = {
+    val path = name.split("::")
+    val runtime = JRuby.runtime
+
+    val klazz = if (path.length == 1) runtime.getClass(name)
+    else {
+      val headModule = runtime.getModule(path.head)
+      if (headModule == null) throw new IllegalArgumentException(s"Module ${path.head} not found")
+      val module = path.slice(1, path.size-1).foldLeft(headModule) { (memo, n) =>
+        val nextModule = memo.defineModuleUnder(n)
+        if (nextModule == null) throw new IllegalArgumentException(s"Submodule $n not found in module $memo")
+        nextModule
+
+                                                                   }
+      val cls = module.getClass(path.last)
+      if (cls == null) throw new IllegalArgumentException(s"Class ${path.last} not found in module $module")
+      cls
+    }
+
+    new RubyObject(klazz)
+  }
 }

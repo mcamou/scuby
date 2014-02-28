@@ -58,6 +58,13 @@ class BasicSpec extends Specification {
       array1 === array2
     }
 
+    "return a Ruby Class object using RubyClass" in {
+      require("test.rb")
+      val testClass = RubyClass("TestModule::Inner::Test")
+      testClass.send[String]('name) === "TestModule::Inner::Test"
+      (testClass ! 'class).send[String]('name) === "Class"
+    }
+
     "be able to check if a Ruby object is of a given class" in {
       val array = evalRuby("[]")
       array.isA_?('Array) must beTrue
