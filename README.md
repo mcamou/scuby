@@ -36,11 +36,21 @@ or if you use Maven, add this to your pom.xml:
 
 If you use Gradle or some other build tool, please convert this to your preferred syntax.
 
-## DEPENDENCIES
+## USING A DIFFERENT JRUBY VERSION
 
-The Scuby pom.xml file includes dependencies on `org.scala-lang.scala-library 2.10.3` and `org.jruby.jruby-complete 1.7.9`. If you don't use Maven or something that understands Maven pom.xml files, you will need to download the corresponding jars and place them in your CLASSPATH.
+At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2 it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
 
-At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits.
+However, if for some reason you wish to use an older version of JRuby, you can add the following line to your project's `build.sbt`:
+
+```
+libraryDependencies += "org.jruby" % "jruby" % "1.7.6" force()
+```
+
+This would bring in JRuby 1.7.6. Note the `force()` at the end of the line, this tells SBT to use that version regardless of if some other dependency has a transitive dependency on a later one.
+
+## COMPILING SCUBY
+
+The Scuby build.sbt file includes dependencies on `org.scala-lang:scala-library:2.10.3` and `org.jruby:jruby-complete:1.7.9`. If you don't use SBT you will have to download those dependencies (and any transitive ones) and place them on your CLASSPATH.
 
 ## USAGE
 
