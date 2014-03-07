@@ -4,11 +4,11 @@ import xerial.sbt.Sonatype.SonatypeKeys
 import SonatypeKeys._
 
 val jrubyVersion = "1.7.9"
-val specs2Version = "2.3.7"
+val specs2Version = "2.3.10"
 
 name := "Scuby"
 
-version := "0.2.4-SNAPSHOT"
+version := "0.2.5-SNAPSHOT"
 
 isSnapshot := true
 
@@ -20,8 +20,6 @@ libraryDependencies += "org.jruby" % "jruby" % jrubyVersion
 
 // Here because of a dependency problem with JRuby 1.7.9 - probably remove with JRuby 1.7.10
 libraryDependencies += "org.jruby.joni" % "joni" % "2.1.1"
-
-libraryDependencies += "org.specs2" %% "specs2-core" % specs2Version % "test"
 
 libraryDependencies += "org.specs2" %% "specs2-matcher" % specs2Version % "test"
 

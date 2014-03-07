@@ -58,11 +58,22 @@ class BasicSpec extends Specification {
       array1 === array2
     }
 
-    "return a Ruby Class object using RubyClass" in {
+    "get a reference to a Ruby Class object using RubyClass" in {
       require("test.rb")
       val testClass = RubyClass("TestModule::Inner::Test")
       testClass.send[String]('name) === "TestModule::Inner::Test"
       (testClass ! 'class).send[String]('name) === "Class"
+    }
+
+    "get a reference to a Ruby module and call a method" in {
+      require("test.rb")
+      val module = RubyModule("TestModule::Inner")
+      module.send[String]('test) === "Testing module method"
+    }
+
+    "throw an exception if a Ruby class doesn't exist" in {
+      require("test.rb")
+      RubyClass("TestModule::Foo") must throwA[IllegalArgumentException]
     }
 
     "be able to check if a Ruby object is of a given class" in {

@@ -221,39 +221,11 @@ object % {
    * @return a RubyObj that represents the corresponding Ruby Symbol
    */
   def apply (sym: Symbol): RubyObj = apply(sym.name)
-  def apply (sym: String): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym))
-}
 
-/**
- * Factory for Ruby class objects
- */
-object RubyClass {
-  // TODO Handle a cache of Scala symbol -> Ruby class mappings
   /**
-   * Returns the Ruby Class object for the given class
-   * @param name The required class name
-   * @return The associated Class object as a RubyObj
+   * Creates a Ruby Symbol from a Scala String.
+   * @param sym the Scala String
+   * @return a RubyObj that represents the corresponding Ruby Symbol
    */
-  def apply(name: Symbol): RubyObj = apply(name.name)
-  def apply(name: String): RubyObj = {
-    val path = name.split("::")
-    val runtime = JRuby.runtime
-
-    val klazz = if (path.length == 1) runtime.getClass(name)
-    else {
-      val headModule = runtime.getModule(path.head)
-      if (headModule == null) throw new IllegalArgumentException(s"Module ${path.head} not found")
-      val module = path.slice(1, path.size-1).foldLeft(headModule) { (memo, n) =>
-        val nextModule = memo.defineModuleUnder(n)
-        if (nextModule == null) throw new IllegalArgumentException(s"Submodule $n not found in module $memo")
-        nextModule
-
-                                                                   }
-      val cls = module.getClass(path.last)
-      if (cls == null) throw new IllegalArgumentException(s"Class ${path.last} not found in module $module")
-      cls
-    }
-
-    new RubyObject(klazz)
-  }
+  def apply (sym: String): RubyObj = new RubyObject(RubySymbol.newSymbol(JRuby.runtime, sym))
 }

@@ -73,5 +73,9 @@ module TestModule
         "Hello, #{msg}"
       end
     end
+
+    def self.test
+      "Testing module method"
+    end
   end
 end

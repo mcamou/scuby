@@ -17,7 +17,7 @@ The project has been sponsored in part by [Abstra.cc](http://www.abstra.cc) wher
 To add Scuby to a Maven project, just add the following dependency to your build.sbt:
 
 ```
-libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.2"
+libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.3"
 ```
 
 or if you use Maven, add this to your pom.xml:
@@ -26,19 +26,20 @@ or if you use Maven, add this to your pom.xml:
 <dependency>
   <groupId>com.tecnoguru</groupId>
   <artifactId>scuby_2.10</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
 </dependency>
 ```
 
+If you use Gradle or some other build tool, please convert this to your preferred syntax.
+
 **NOTE** Starting with Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` as per Scala packaging conventions.
 
-**NOTE** Don't use Scuby 0.2.2, it has a nasty bug where it won't resolve class names that are within modules. Update to Scuby 0.2.3.
+**NOTE** Don't use Scuby 0.2.2, it has a nasty bug where it won't resolve class names that are within modules. Update to Scuby 0.2.3+.
 
-If you use Gradle or some other build tool, please convert this to your preferred syntax.
 
 ## USING A DIFFERENT JRUBY VERSION
 
-At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2 it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
+At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2+ it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
 
 However, if for some reason you wish to use an older version of JRuby, you can add the following line to your project's `build.sbt`:
 
@@ -54,7 +55,7 @@ The Scuby build.sbt file includes dependencies on `org.scala-lang:scala-library:
 
 ## USAGE
 
-At this point the Scala -> Ruby part is partly done, while the Ruby -> Scala part is still in the planning stages, although it's become less necessary with the JRuby changes in 1.6.x and the other projects mentioned in the _RELATED PROJECTS_ section. Here are some examples of the things you can do today. Assume you have the following Ruby code in a file called `test.rb` somewhere in your CLASSPATH (this file is part of the Scuby unit tests and can be found in `src/test/resources/test.rb`):
+At this point the Scala -> Ruby part is partly done, while the Ruby -> Scala part is still in the planning stages, although it's become less necessary with the JRuby changes in 1.6.x and the other projects mentioned in the _RELATED PROJECTS_ section. Here are some examples of the things you can do today. Assume you have the following Ruby code in a file called `test.rb` somewhere in your CLASSPATH (this file is part of the Scuby unit tests and can be found in `src/test/resources/test.rb`). As features are added this example might become outdated (as in, there are more things you can do than shown here). Look at the tests to check out the latest capabilities:
 
 ```ruby
 module Core
@@ -71,6 +72,10 @@ module Core
 
     def get_label
       javax.swing.JLabel.new(fullname)
+    end
+
+    def length
+      fullname.length
     end
   end
 
@@ -126,16 +131,22 @@ object Main {
     array3 respondTo_? 'length // true
     array3 respondTo_? 'foo    //false
 
-    // Create a proxy object for the Ruby BackEnd class
-    val backEnd = RubyClass('BackEnd)
+    // Create a proxy object for the Ruby BackEnd module
+    val backEnd = RubyModule('BackEnd)
 
     // Create an instance of the Person class
     val person = new RubyObject('Person, "Zaphod", "Beeblebrox")
     val person2 = RubyClass('Person) ! ('new, "Ford", "Prefect")
 
-    // Call a method on a Ruby object (in this case, the Ruby class),
+    // Call a method on a Ruby object (in this case, the Ruby module),
     // passing in parameters, and get back another Ruby object
     val zaphod = backEnd ! ('get_person, "Zaphod")
+
+    // JRuby automatically converts between Java primitives/Strings and some Ruby classes. This can sometimes be a
+    // problem. For those cases you have to use the send[T] method with the expected type. See
+    // https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby for more info.
+    val name: String = zaphod.send[String]('fullname)
+    val length: Long = zaphod.send[Long]('length)
 
     // Call a Ruby method with no parameters
     val data = backEnd ! 'get_data
@@ -162,7 +173,7 @@ object Main {
     // is kind of ugly but necessary because of the strong typing, since
     // Array/Hash access returns an AnyRef.
     // Ruby equivalent:
-    // label = backEnd.get_people[:people][0].get_label
+    // label = backEnd.get_data.get_people[:people][0].get_label
     // contents = form.components[:startables].widget.peer  # Returns a JComponent
     val label = (backEnd ! 'get_data ! ('[], %('people)) ! ('[], 0)).send[JLabel]('get_label)
     // OR
@@ -192,7 +203,7 @@ object Main {
 }
 ```
 
-This is the gist of it. Basically we can create Ruby objects, call methods on them and evaluate Ruby code. Scuby has its own `RubyObj` class that wraps a JRuby  `RubyObject` and does its magic. It also has its own `RubyClass` class that  represents a Ruby class.
+This is the gist of it. Basically we can create Ruby objects, call methods on them and evaluate Ruby code. Scuby has its own `RubyObj` class that wraps a JRuby  `RubyObject` and does its magic. It also has its own `RubyClass` and `RubyModule` classes that represent respectively a Ruby class and a Ruby module.
 
 
 ## RELATED PROJECTS
