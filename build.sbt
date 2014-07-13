@@ -12,7 +12,7 @@ version := "0.2.5-SNAPSHOT"
 
 isSnapshot := true
 
-scalaVersion := "2.10.3"
+crossScalaVersions := Seq("2.10.3", "2.11.1")
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
