@@ -14,7 +14,7 @@ The project has been sponsored in part by [Abstra.cc](http://www.abstra.cc) wher
 
 ## ADDING SCUBY TO YOUR PROJECT
 
-Scuby is available in Maven Central. As of version 0.2.5 it has been cross-compiled with Scala 2.10 and 2.11. To add Scuby to a Maven project, just add the following dependency to your build.sbt:
+Scuby is available in Maven Central. As of version 0.2.5 it has been cross-compiled with Scala 2.10 and 2.11. To add Scuby to an SBT project, just add the following dependency to your build.sbt:
 
 ```
 libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.5"
