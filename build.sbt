@@ -8,9 +8,9 @@ val specs2Version = "2.3.10"
 
 name := "Scuby"
 
-version := "0.2.5-SNAPSHOT"
+version := "0.2.5"
 
-isSnapshot := true
+isSnapshot := false
 
 crossScalaVersions := Seq("2.10.3", "2.11.1")
 
