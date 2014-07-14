@@ -5,6 +5,8 @@ import org.specs2.mutable.Specification
 import JRuby._
 
 class BasicSpec extends Specification {
+  sequential
+
   "Scuby" should {
     "evaluate ruby code" in {
       eval[Long]("1 + 1") === 2

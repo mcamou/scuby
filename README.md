@@ -39,9 +39,9 @@ If you use Gradle or some other build tool, please convert this to your preferre
 
 ## USING A DIFFERENT JRUBY VERSION
 
-At the moment Scuby is based on JRuby 1.7.11 and Scala 2.10.4/2.11.1, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2+ it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
+At the moment Scuby is based on JRuby 1.7.13 and Scala 2.10.4/2.11.1, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2+ it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
 
-Note that there have been some problems working with JRuby 1.7.12 and later, so you might want to hold off on using those until this is fixed (pull requests welcome!)
+JRuby 1.7.12 seems to have multithreading problems when using the default LocalContextScope (LocalContextScope.SINGLETON). This is reflected in the Specs2 tests, which now run sequentially. Please make a note of this and be careful when using Scuby from within different threads.
 
 However, if for some reason you wish to use an older version of JRuby, you can add the following line to your project's `build.sbt`:
 

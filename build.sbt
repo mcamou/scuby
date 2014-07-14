@@ -3,14 +3,14 @@ import JacocoPlugin._
 import xerial.sbt.Sonatype.SonatypeKeys
 import SonatypeKeys._
 
-val jrubyVersion = "1.7.11"
+val jrubyVersion = "1.7.13"
 val specs2Version = "2.3.13"
 
 name := "Scuby"
 
-version := "0.2.5"
+version := "0.2.6-SNAPSHOT"
 
-isSnapshot := false
+isSnapshot := true
 
 scalaVersion := "2.11.1"
 
