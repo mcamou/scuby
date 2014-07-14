@@ -14,10 +14,10 @@ The project has been sponsored in part by [Abstra.cc](http://www.abstra.cc) wher
 
 ## ADDING SCUBY TO YOUR PROJECT
 
-To add Scuby to a Maven project, just add the following dependency to your build.sbt:
+Scuby is available in Maven Central. As of version 0.2.5 it has been cross-compiled with Scala 2.10 and 2.11. To add Scuby to a Maven project, just add the following dependency to your build.sbt:
 
 ```
-libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.3"
+libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.5"
 ```
 
 or if you use Maven, add this to your pom.xml:
@@ -25,21 +25,23 @@ or if you use Maven, add this to your pom.xml:
 ```xml
 <dependency>
   <groupId>com.tecnoguru</groupId>
-  <artifactId>scuby_2.10</artifactId>
-  <version>0.2.4</version>
+  <artifactId>scuby_2.10</artifactId> <!-- Or scuby_2.11 -->
+  <version>0.2.5</version>
 </dependency>
 ```
 
 If you use Gradle or some other build tool, please convert this to your preferred syntax.
 
-**NOTE** Starting with Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` as per Scala packaging conventions.
+**NOTE** Starting with Scuby 0.2.2, the artifact name has changed from `scuby` to `scuby_2.10` / `scuby_2.11` as per Scala packaging conventions.
 
 **NOTE** Don't use Scuby 0.2.2, it has a nasty bug where it won't resolve class names that are within modules. Update to Scuby 0.2.3+.
 
 
 ## USING A DIFFERENT JRUBY VERSION
 
-At the moment Scuby is based on JRuby 1.7.9 and Scala 2.10.3, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2+ it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
+At the moment Scuby is based on JRuby 1.7.11 and Scala 2.10.4/2.11.1, even though it makes almost no use (yet) of the new Java interoperability features introduced with JRuby 1.4. These should slowly find their way into Scuby as time permits. As of 0.2.2+ it does make some use of calls to the JRuby classes themselves, so YMMV as far as using different versions of JRuby.
+
+Note that there have been some problems working with JRuby 1.7.12 and later, so you might want to hold off on using those until this is fixed (pull requests welcome!)
 
 However, if for some reason you wish to use an older version of JRuby, you can add the following line to your project's `build.sbt`:
 
@@ -247,3 +249,6 @@ On the JRuby side (although lots of it is handled automatically by JRuby).
 
 As usual on GitHub: fork, pull, modify, *create tests*, commit, push, pull request. You can also find me on Twitter as [@thedoc](https://twitter.com/thedoc)
 
+## THANKS
+
+Thanks to eirslett for the cross-compilation instructions and pull request!

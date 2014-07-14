@@ -3,8 +3,8 @@ import JacocoPlugin._
 import xerial.sbt.Sonatype.SonatypeKeys
 import SonatypeKeys._
 
-val jrubyVersion = "1.7.9"
-val specs2Version = "2.3.10"
+val jrubyVersion = "1.7.11"
+val specs2Version = "2.3.13"
 
 name := "Scuby"
 
@@ -12,14 +12,13 @@ version := "0.2.5"
 
 isSnapshot := false
 
-crossScalaVersions := Seq("2.10.3", "2.11.1")
+scalaVersion := "2.11.1"
+
+crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
 libraryDependencies += "org.jruby" % "jruby" % jrubyVersion
-
-// Here because of a dependency problem with JRuby 1.7.9 - probably remove with JRuby 1.7.10
-libraryDependencies += "org.jruby.joni" % "joni" % "2.1.1"
 
 libraryDependencies += "org.specs2" %% "specs2-matcher" % specs2Version % "test"
 
@@ -71,4 +70,5 @@ pomExtra := (
                 </developers>
             )
 
-addCommandAlias("dist", ";publishSigned;sonatypeRelease")
+addCommandAlias("dist", "; publishSigned; sonatypeRelease")
+
