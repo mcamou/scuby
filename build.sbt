@@ -8,9 +8,9 @@ val specs2Version = "2.3.13"
 
 name := "Scuby"
 
-version := "0.2.6-SNAPSHOT"
+version := "0.2.5"
 
-isSnapshot := true
+isSnapshot := false
 
 scalaVersion := "2.11.1"
 
@@ -18,13 +18,10 @@ crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
-libraryDependencies += "org.jruby" % "jruby" % jrubyVersion
-
-libraryDependencies += "org.specs2" %% "specs2-matcher" % specs2Version % "test"
-
-libraryDependencies += "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test"
-
-libraryDependencies += "org.specs2" %% "specs2-scalacheck" % specs2Version % "test"
+libraryDependencies ++= Seq("org.jruby" % "jruby" % jrubyVersion,
+                            "org.specs2" %% "specs2-matcher" % specs2Version % "test",
+                            "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test",
+                            "org.specs2" %% "specs2-scalacheck" % specs2Version % "test")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Yinline-warnings")
 
@@ -42,33 +39,32 @@ organization := "com.tecnoguru"
 
 profileName := "com.tecnoguru"
 
-pomExtra := (
-            <url>http://github.com/mcamou/scuby</url>
-                <licenses>
-                  <license>
-                    <name>BSD</name>
-                    <url>http://www.opensource.org/licenses/bsd-license.php</url>
-                  </license>
-                </licenses>
-                <scm>
-                  <url>git://github.com/mcamou/scuby.git</url>
-                  <connection>scm:git:git@github.com:mcamou/scuby</connection>
-                  <developerConnection>scm:git:git@github.com:mcamou/scuby</developerConnection>
-                </scm>
-                <inceptionYear>2009</inceptionYear>
-                <developers>
-                  <developer>
-                    <id>mcamou</id>
-                    <name>Mario Camou</name>
-                    <email>mcamou@tecnoguru.com</email>
-                    <url>http://www.github.com/mcamou</url>
-                    <roles>
-                      <role>Original project developer</role>
-                    </roles>
-                    <timezone>+2</timezone>
-                  </developer>
-                </developers>
-            )
+pomExtra := <url>http://github.com/mcamou/scuby</url>
+    <licenses>
+      <license>
+        <name>BSD</name>
+        <url>http://www.opensource.org/licenses/bsd-license.php</url>
+      </license>
+    </licenses>
+    <scm>
+      <url>git://github.com/mcamou/scuby.git</url>
+      <connection>scm:git:git@github.com:mcamou/scuby</connection>
+      <developerConnection>scm:git:git@github.com:mcamou/scuby</developerConnection>
+    </scm>
+    <inceptionYear>2009</inceptionYear>
+    <developers>
+      <developer>
+        <id>mcamou</id>
+        <name>Mario Camou</name>
+        <email>mcamou@tecnoguru.com</email>
+        <url>http://www.github.com/mcamou</url>
+        <roles>
+          <role>Original project developer</role>
+        </roles>
+        <timezone>+2</timezone>
+      </developer>
+    </developers>
 
+// To publish all cross-compiled versions, use "+ dist"
 addCommandAlias("dist", "; publishSigned; sonatypeRelease")
 

@@ -53,7 +53,9 @@ This would bring in JRuby 1.7.6. Note the `force()` at the end of the line, this
 
 ## COMPILING SCUBY
 
-The Scuby build.sbt file includes dependencies on `org.scala-lang:scala-library:2.10.3` and `org.jruby:jruby-complete:1.7.9`. If you don't use SBT you will have to download those dependencies (and any transitive ones) and place them on your CLASSPATH.
+The Scuby build.sbt file includes dependencies on `org.scala-lang:scala-library:2.11.2` and `org.jruby:jruby-complete:1.7.12`. If you don't use SBT you will have to download those dependencies (and any transitive ones) and place them on your CLASSPATH.
+
+If you want to compile for both Scala 2.10.x and 2.11.x, use `+ package` instead of just `package`.
 
 ## USAGE
 
