@@ -3,7 +3,7 @@ import JacocoPlugin._
 import xerial.sbt.Sonatype.SonatypeKeys
 import SonatypeKeys._
 
-val jrubyVersion = "1.7.13"
+val jrubyVersion = "1.7.21"
 val specs2Version = "2.3.13"
 
 name := "Scuby"
@@ -12,9 +12,9 @@ version := "0.2.5"
 
 isSnapshot := false
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.10.4", "2.11.1")
+crossScalaVersions := Seq("2.10.4", "2.11.7")
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
