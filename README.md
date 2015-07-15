@@ -17,7 +17,7 @@ The project has been sponsored in part by [Abstra.cc](http://www.abstra.cc) wher
 Scuby is available in Maven Central. As of version 0.2.5 it has been cross-compiled with Scala 2.10 and 2.11. To add Scuby to an SBT project, just add the following dependency to your build.sbt:
 
 ```
-libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.5"
+libraryDependencies += "com.tecnoguru" %% "scuby" % "0.2.6"
 ```
 
 or if you use Maven, add this to your pom.xml:
@@ -26,7 +26,7 @@ or if you use Maven, add this to your pom.xml:
 <dependency>
   <groupId>com.tecnoguru</groupId>
   <artifactId>scuby_2.10</artifactId> <!-- Or scuby_2.11 -->
-  <version>0.2.5</version>
+  <version>0.2.6</version>
 </dependency>
 ```
 

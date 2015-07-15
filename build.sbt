@@ -8,7 +8,7 @@ val specs2Version = "2.3.13"
 
 name := "Scuby"
 
-version := "0.2.5"
+version := "0.2.6"
 
 isSnapshot := false
 
